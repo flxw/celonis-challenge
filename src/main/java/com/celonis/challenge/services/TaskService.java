@@ -3,7 +3,7 @@ package com.celonis.challenge.services;
 import com.celonis.challenge.exceptions.InternalException;
 import com.celonis.challenge.exceptions.NotFoundException;
 import com.celonis.challenge.model.ProjectGenerationTask;
-import com.celonis.challenge.model.ProjectGenerationTaskRepository;
+import com.celonis.challenge.model.TaskRepository;
 import com.celonis.challenge.model.Task;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.FileSystemResource;
@@ -13,51 +13,47 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.noContent;
-
 @Service
 public class TaskService {
 
-    private final ProjectGenerationTaskRepository projectGenerationTaskRepository;
+    private final TaskRepository taskRepository;
 
-    public TaskService(ProjectGenerationTaskRepository projectGenerationTaskRepository) {
-        this.projectGenerationTaskRepository = projectGenerationTaskRepository;
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
 
     public List<Task> listTasks() {
-        return projectGenerationTaskRepository.findAll();
+        return taskRepository.findAll();
     }
 
     public Task createTask(Task task) {
         task.setId(null);
         task.setCreationDate(new Date());
-        return projectGenerationTaskRepository.save(task);
-    }
-
-    public Task getTask(String taskId) {
-        return get(taskId);
+        return taskRepository.save(task);
     }
 
     public Task update(String taskId, Task deltaTask) {
-        Task existing = get(taskId);
+        Task existing = getTask(taskId);
         existing.setCreationDate(deltaTask.getCreationDate());
         existing.setName(deltaTask.getName());
-        return projectGenerationTaskRepository.save(existing);
+        return taskRepository.save(existing);
     }
 
     public void delete(String taskId) {
-        projectGenerationTaskRepository.delete(taskId);
+        taskRepository.delete(taskId);
     }
 
     public void executeTask(String taskId) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("challenge.zip");
+        Task existing = getTask(taskId);
+
+        // TODO: put stuff into thread of its own here
+        /*URL url = Thread.currentThread().getContextClassLoader().getResource("challenge.zip");
         if (url == null) {
             throw new InternalException("Zip file not found");
         }
@@ -65,11 +61,11 @@ public class TaskService {
             storeResult(taskId, url);
         } catch (Exception e) {
             throw new InternalException(e);
-        }
+        }*/
     }
 
-    private Task get(String taskId) {
-        Task projectGenerationTask = projectGenerationTaskRepository.findOne(taskId);
+    public Task getTask(String taskId) {
+        Task projectGenerationTask = taskRepository.findOne(taskId);
         if (projectGenerationTask == null) {
             throw new NotFoundException();
         }
@@ -87,12 +83,12 @@ public class TaskService {
     }
 
     public void storeResult(String taskId, URL url) throws IOException {
-        ProjectGenerationTask existing = (ProjectGenerationTask) get(taskId);
+        ProjectGenerationTask existing = (ProjectGenerationTask) getTask(taskId);
         File outputFile = File.createTempFile(taskId, ".zip");
 
         outputFile.deleteOnExit();
         existing.setStorageLocation(outputFile.getAbsolutePath());
-        projectGenerationTaskRepository.save(existing);
+        taskRepository.save(existing);
 
         try (InputStream is = url.openStream();
              OutputStream os = new FileOutputStream(outputFile)) {
