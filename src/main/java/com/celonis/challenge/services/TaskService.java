@@ -4,6 +4,7 @@ import com.celonis.challenge.exceptions.InternalException;
 import com.celonis.challenge.exceptions.NotFoundException;
 import com.celonis.challenge.model.ProjectGenerationTask;
 import com.celonis.challenge.model.ProjectGenerationTaskRepository;
+import com.celonis.challenge.model.Task;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -12,10 +13,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.noContent;
 
 @Service
 public class TaskService {
@@ -31,20 +35,20 @@ public class TaskService {
         return projectGenerationTaskRepository.findAll();
     }
 
-    public ProjectGenerationTask createTask(ProjectGenerationTask projectGenerationTask) {
-        projectGenerationTask.setId(null);
-        projectGenerationTask.setCreationDate(new Date());
-        return projectGenerationTaskRepository.save(projectGenerationTask);
+    public Task createTask(Task task) {
+        task.setId(null);
+        task.setCreationDate(new Date());
+        return projectGenerationTaskRepository.save(task);
     }
 
-    public ProjectGenerationTask getTask(String taskId) {
+    public Task getTask(String taskId) {
         return get(taskId);
     }
 
-    public ProjectGenerationTask update(String taskId, ProjectGenerationTask projectGenerationTask) {
-        ProjectGenerationTask existing = get(taskId);
-        existing.setCreationDate(projectGenerationTask.getCreationDate());
-        existing.setName(projectGenerationTask.getName());
+    public Task update(String taskId, Task deltaTask) {
+        Task existing = get(taskId);
+        existing.setCreationDate(deltaTask.getCreationDate());
+        existing.setName(deltaTask.getName());
         return projectGenerationTaskRepository.save(existing);
     }
 
@@ -64,21 +68,16 @@ public class TaskService {
         }
     }
 
-    private ProjectGenerationTask get(String taskId) {
-        ProjectGenerationTask projectGenerationTask = projectGenerationTaskRepository.findOne(taskId);
+    private Task get(String taskId) {
+        Task projectGenerationTask = projectGenerationTaskRepository.findOne(taskId);
         if (projectGenerationTask == null) {
             throw new NotFoundException();
         }
         return projectGenerationTask;
     }
 
-    public ResponseEntity<FileSystemResource> getTaskResult(String taskId) {
-        ProjectGenerationTask existing = get(taskId);
+    public ResponseEntity getTaskResult(ProjectGenerationTask existing) {
         File inputFile = new File(existing.getStorageLocation());
-
-        if (!inputFile.exists()) {
-            throw new InternalException("File not generated yet");
-        }
 
         HttpHeaders respHeaders = new HttpHeaders();
         respHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -88,11 +87,13 @@ public class TaskService {
     }
 
     public void storeResult(String taskId, URL url) throws IOException {
-        ProjectGenerationTask existing = get(taskId);
+        ProjectGenerationTask existing = (ProjectGenerationTask) get(taskId);
         File outputFile = File.createTempFile(taskId, ".zip");
+
         outputFile.deleteOnExit();
         existing.setStorageLocation(outputFile.getAbsolutePath());
         projectGenerationTaskRepository.save(existing);
+
         try (InputStream is = url.openStream();
              OutputStream os = new FileOutputStream(outputFile)) {
             IOUtils.copy(is, os);

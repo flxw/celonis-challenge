@@ -1,8 +1,8 @@
 package com.celonis.challenge.controllers;
 
 import com.celonis.challenge.model.ProjectGenerationTask;
+import com.celonis.challenge.model.Task;
 import com.celonis.challenge.services.TaskService;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,8 +54,14 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}/result")
-    public ResponseEntity<FileSystemResource> getResult(@PathVariable String taskId) {
-        return taskService.getTaskResult(taskId);
+    public ResponseEntity getResult(@PathVariable String taskId) {
+        Task t = taskService.getTask(taskId);
+
+        if (t.hasConsumableResult()) {
+            return taskService.getTaskResult((ProjectGenerationTask) t);
+        } else {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
     }
 
 }
