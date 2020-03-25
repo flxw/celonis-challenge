@@ -24,16 +24,20 @@ public class TaskCreationPayload {
 
         switch (this.type) {
             case TIMER_TASK:
-                t = new TimerTask(x, y);
+                TimerTask tt = new TimerTask();
+                tt.setStart(x);
+                tt.setEnd(y);
+                t = tt;
                 break;
 
             case PROJECTGENERATION_TASK:
                 t = new ProjectGenerationTask();
-                t.setId(id);
-                t.setCreationDate(creationDate);
-                t.setName(name);
                 break;
         }
+
+        t.setId(id);
+        t.setCreationDate(creationDate);
+        t.setName(name);
 
         return t;
     }

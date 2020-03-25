@@ -5,10 +5,12 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import java.util.Date;
 
 @Entity
-public abstract class Task implements Runnable {
+@Inheritance
+public abstract class Task {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -45,7 +47,7 @@ public abstract class Task implements Runnable {
         return this.hasConsumableResult;
     }
 
-    public void run() {
+    public void execute() {
         System.out.println("executing task");
     }
 }

@@ -53,17 +53,13 @@ public class TaskService {
 
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
-        this.taskExecutor.execute(existing);
-        // TODO: put stuff into thread of its own here
-        /*URL url = Thread.currentThread().getContextClassLoader().getResource("challenge.zip");
-        if (url == null) {
-            throw new InternalException("Zip file not found");
-        }
-        try {
-            storeResult(taskId, url);
-        } catch (Exception e) {
-            throw new InternalException(e);
-        }*/
+
+        Runnable runner = () -> {
+            existing.execute();
+            taskRepository.save(existing);
+        };
+
+        this.taskExecutor.execute(runner);
     }
 
     public Task getTask(String taskId) {
@@ -82,19 +78,5 @@ public class TaskService {
         respHeaders.setContentDispositionFormData("attachment", "challenge.zip");
 
         return new ResponseEntity<>(new FileSystemResource(inputFile), respHeaders, HttpStatus.OK);
-    }
-
-    public void storeResult(String taskId, URL url) throws IOException {
-        ProjectGenerationTask existing = (ProjectGenerationTask) getTask(taskId);
-        File outputFile = File.createTempFile(taskId, ".zip");
-
-        outputFile.deleteOnExit();
-        existing.setStorageLocation(outputFile.getAbsolutePath());
-        taskRepository.save(existing);
-
-        try (InputStream is = url.openStream();
-             OutputStream os = new FileOutputStream(outputFile)) {
-            IOUtils.copy(is, os);
-        }
     }
 }
