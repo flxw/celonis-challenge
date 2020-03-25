@@ -31,7 +31,7 @@ public class TaskService {
     }
 
 
-    public List<ProjectGenerationTask> listTasks() {
+    public List<Task> listTasks() {
         return projectGenerationTaskRepository.findAll();
     }
 

@@ -21,23 +21,23 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    public List<ProjectGenerationTask> listTasks() {
+    public List<Task> listTasks() {
         return taskService.listTasks();
     }
 
     @PostMapping("/")
-    public ProjectGenerationTask createTask(@RequestBody @Valid ProjectGenerationTask projectGenerationTask) {
+    public Task createTask(@RequestBody @Valid Task projectGenerationTask) {
         return taskService.createTask(projectGenerationTask);
     }
 
     @GetMapping("/{taskId}")
-    public ProjectGenerationTask getTask(@PathVariable String taskId) {
+    public Task getTask(@PathVariable String taskId) {
         return taskService.getTask(taskId);
     }
 
     @PutMapping("/{taskId}")
-    public ProjectGenerationTask updateTask(@PathVariable String taskId,
-                                            @RequestBody @Valid ProjectGenerationTask projectGenerationTask) {
+    public Task updateTask(@PathVariable String taskId,
+                           @RequestBody @Valid Task projectGenerationTask) {
         return taskService.update(taskId, projectGenerationTask);
     }
 
