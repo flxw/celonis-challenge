@@ -1,13 +1,14 @@
 package com.celonis.challenge.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
-public abstract class Task {
+@Entity
+public abstract class Task implements Runnable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -42,5 +43,9 @@ public abstract class Task {
 
     public boolean hasConsumableResult() {
         return this.hasConsumableResult;
+    }
+
+    public void run() {
+        System.out.println("executing task");
     }
 }

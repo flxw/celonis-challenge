@@ -2,6 +2,7 @@ package com.celonis.challenge.controllers;
 
 import com.celonis.challenge.model.ProjectGenerationTask;
 import com.celonis.challenge.model.Task;
+import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.services.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,8 @@ public class TaskController {
     }
 
     @PostMapping("/")
-    public Task createTask(@RequestBody @Valid Task projectGenerationTask) {
-        return taskService.createTask(projectGenerationTask);
+    public Task createTask(@RequestBody TaskCreationPayload taskCreationPayload) {
+        return taskService.createTask(taskCreationPayload);
     }
 
     @GetMapping("/{taskId}")

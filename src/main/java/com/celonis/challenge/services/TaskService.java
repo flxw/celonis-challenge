@@ -3,10 +3,12 @@ package com.celonis.challenge.services;
 import com.celonis.challenge.exceptions.InternalException;
 import com.celonis.challenge.exceptions.NotFoundException;
 import com.celonis.challenge.model.ProjectGenerationTask;
+import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.model.TaskRepository;
 import com.celonis.challenge.model.Task;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,20 +24,20 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private TaskExecutor taskExecutor;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskExecutor taskExecutor) {
         this.taskRepository = taskRepository;
+        this.taskExecutor = taskExecutor;
     }
-
 
     public List<Task> listTasks() {
         return taskRepository.findAll();
     }
 
-    public Task createTask(Task task) {
-        task.setId(null);
-        task.setCreationDate(new Date());
-        return taskRepository.save(task);
+    public Task createTask(TaskCreationPayload tp) {
+        Task t = tp.generateTask();
+        return taskRepository.save(t);
     }
 
     public Task update(String taskId, Task deltaTask) {
@@ -51,7 +53,7 @@ public class TaskService {
 
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
-
+        this.taskExecutor.execute(existing);
         // TODO: put stuff into thread of its own here
         /*URL url = Thread.currentThread().getContextClassLoader().getResource("challenge.zip");
         if (url == null) {
