@@ -62,4 +62,8 @@ public abstract class Task {
     public void executeStep() throws InterruptedException {
         this.progress = 100;
     }
+
+    public void setState(STATE state) {
+        this.state = state;
+    }
 }

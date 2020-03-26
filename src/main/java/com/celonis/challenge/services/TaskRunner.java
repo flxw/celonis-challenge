@@ -18,7 +18,8 @@ public class TaskRunner implements Runnable {
             try {
                 t.executeStep();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                t.setState(Task.STATE.CANCELED);
+                taskRepository.save(t);
                 return;
             }
             taskRepository.save(t);
