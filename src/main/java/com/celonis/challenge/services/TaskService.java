@@ -111,6 +111,13 @@ public class TaskService {
                 .collect(Collectors.toList());
 
         for (Task t : tasks) {
+            String taskId = t.getId();
+
+            if (executedTaskMap.containsKey(taskId)) {
+                executedTaskMap.get(taskId).cancel(true);
+                executedTaskMap.remove(taskId);
+            }
+
             taskRepository.delete(t);
         }
     }
