@@ -22,16 +22,20 @@ public class ProjectGenerationTask extends Task {
     }
 
     @Override
-    public void execute() {
+    public void executeStep() {
         URL url = Thread.currentThread().getContextClassLoader().getResource("challenge.zip");
+
         if (url == null) {
             throw new InternalException("Zip file not found");
         }
+
         try {
             storeResult(url);
         } catch (Exception e) {
             throw new InternalException(e);
         }
+
+        setProgress(100);
     }
 
     public void storeResult(URL url) throws IOException {

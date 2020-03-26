@@ -13,22 +13,29 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private TaskExecutor taskExecutor;
+    private ThreadPoolTaskExecutor taskExecutor;
+    private Map<String,Future> executedTaskMap;
 
-    public TaskService(TaskRepository taskRepository, TaskExecutor taskExecutor) {
+    public TaskService(TaskRepository taskRepository, ThreadPoolTaskExecutor taskExecutor) {
         this.taskRepository = taskRepository;
         this.taskExecutor = taskExecutor;
+        this.executedTaskMap = new HashMap<>();
     }
 
     public List<Task> listTasks() {
@@ -53,13 +60,10 @@ public class TaskService {
 
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
+        TaskRunner runner = new TaskRunner(taskRepository, existing);
+        Future f = this.taskExecutor.submit(runner);
 
-        Runnable runner = () -> {
-            existing.execute();
-            taskRepository.save(existing);
-        };
-
-        this.taskExecutor.execute(runner);
+        executedTaskMap.put(taskId, f);
     }
 
     public Task getTask(String taskId) {
@@ -78,5 +82,9 @@ public class TaskService {
         respHeaders.setContentDispositionFormData("attachment", "challenge.zip");
 
         return new ResponseEntity<>(new FileSystemResource(inputFile), respHeaders, HttpStatus.OK);
+    }
+
+    public void cancelTask(String taskId) {
+        this.executedTaskMap.get(taskId).cancel(true);
     }
 }

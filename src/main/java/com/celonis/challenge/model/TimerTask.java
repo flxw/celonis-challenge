@@ -6,30 +6,26 @@ import javax.persistence.Entity;
 public class TimerTask extends Task {
     private int start;
     private int end;
-    private int current;
-
-    public int getStart() {
-        return start;
-    }
+    private int current = Integer.MIN_VALUE;
 
     public void setStart(int start) {
         this.start = start;
-    }
-
-    public int getEnd() {
-        return end;
     }
 
     public void setEnd(int end) {
         this.end = end;
     }
 
-    private double getPercentage() {
-        return current/end * 100;
-    }
-
     @Override
-    public void execute() {
-        System.out.println("Hello from TimerTask");
+    public void executeStep() throws InterruptedException {
+        if (current == Integer.MIN_VALUE) {
+            current = start;
+        } else if (current == end) {
+            return;
+        }
+
+        current++;
+        setProgress(current/(double)end * 100);
+        Thread.sleep(1000);
     }
 }

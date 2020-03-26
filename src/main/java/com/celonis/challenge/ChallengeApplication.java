@@ -2,9 +2,9 @@ package com.celonis.challenge;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.context.annotation.Bean;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @SpringBootApplication
 public class ChallengeApplication {
@@ -13,7 +13,7 @@ public class ChallengeApplication {
     }
 
     @Bean
-    TaskExecutor taskExecutor () {
+    ThreadPoolTaskExecutor taskExecutor () {
         ThreadPoolTaskExecutor t = new ThreadPoolTaskExecutor();
         t.setCorePoolSize(10);
         t.setMaxPoolSize(100);

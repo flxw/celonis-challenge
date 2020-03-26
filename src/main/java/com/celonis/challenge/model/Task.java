@@ -18,6 +18,10 @@ public abstract class Task {
     private String name;
     private Date creationDate;
     private boolean hasConsumableResult = false;
+    private double progress = 0.0;
+
+    public enum STATE { READY, QUEUED, CANCELED, DONE };
+    private STATE state = STATE.READY;
 
     public String getId() {
         return id;
@@ -47,7 +51,15 @@ public abstract class Task {
         return this.hasConsumableResult;
     }
 
-    public void execute() {
-        System.out.println("executing task");
+    public double getProgress() {
+        return this.progress;
+    }
+
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
+
+    public void executeStep() throws InterruptedException {
+        this.progress = 100;
     }
 }
