@@ -42,6 +42,7 @@ public class TaskController {
         return taskService.update(taskId, projectGenerationTask);
     }
 
+    @CrossOrigin(origins = "*")
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(@PathVariable String taskId) {
