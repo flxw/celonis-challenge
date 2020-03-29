@@ -66,4 +66,8 @@ public abstract class Task {
     public void setState(STATE state) {
         this.state = state;
     }
+
+    public STATE getState() {
+        return state;
+    }
 }

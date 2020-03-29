@@ -29,9 +29,8 @@ export class TaskListComponent implements OnInit {
 
   downloadResult(taskId:string) {
     /* TODO trigger download here
-    * > refactor task creation endpoints to be separate for projectgeneration and timer
     * > add type field for filtering in UI
-    * > add status field for showing a badge
+    * > refactor task creation endpoints to be separate for projectgeneration and timer
     * > task creation wizard
     */
   }
