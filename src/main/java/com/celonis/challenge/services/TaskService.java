@@ -101,7 +101,11 @@ public class TaskService {
     }
 
     public void cancelTask(String taskId) {
-        this.executedTaskMap.get(taskId).cancel(true);
+        Future t = this.executedTaskMap.getOrDefault(taskId, null);
+
+        if (t != null) {
+            this.executedTaskMap.get(taskId).cancel(true);
+        }
     }
 
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
