@@ -36,15 +36,6 @@ export class TaskListComponent implements OnInit {
     this.taskService.startTask(taskId).subscribe(r => this.updateTaskList());
   }
 
-  downloadResult(taskId:string) {
-    /* TODO trigger download here
-    * > Refactor Task Runner so it does not need to know about timer logic
-    * > Clean up task formatting with enum location etc
-    * > finalize challenge today!
-    */
-  }
-
-
   openTimerTaskCreationDialog(): void {
     const dialogRef = this.dialog.open(TimerTaskCreationDialogComponent, {
       width: '600px',

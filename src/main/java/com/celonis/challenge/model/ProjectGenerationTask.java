@@ -41,6 +41,7 @@ public class ProjectGenerationTask extends Task {
         }
 
         setProgress(100);
+        setHasConsumableResult(true);
     }
 
     public void storeResult(URL url) throws IOException {

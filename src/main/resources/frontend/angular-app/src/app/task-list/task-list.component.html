@@ -8,8 +8,8 @@
           <mat-icon>add</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openTimerTaskCreationDialog()">Schedule a timer</button>
           <button mat-menu-item (click)="openProjectgenerationTaskCreationDialog()">Generate a project</button>
+          <button mat-menu-item (click)="openTimerTaskCreationDialog()">Schedule a timer</button>
         </mat-menu>
 
         <button mat-button (click)="updateTaskList()">
@@ -51,11 +51,6 @@
             *ngIf="task.state == 'QUEUED' || task.state == 'RUNNING'"
             (click)="cancelTask(task.id)">
             <mat-icon>cancel</mat-icon>
-        </button>
-        <button mat-icon-button
-            *ngIf="task.hasConsumableResult"
-            (click)="downloadResult(task.id)">
-            <mat-icon>get_app</mat-icon>
         </button>
     </mat-list-item>
 </ng-template>
