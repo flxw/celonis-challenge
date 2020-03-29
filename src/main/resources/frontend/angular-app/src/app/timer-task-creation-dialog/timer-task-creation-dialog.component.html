@@ -1,0 +1,25 @@
+<ng-container>
+  <h1 mat-dialog-title>How do you want to configure the timer task?</h1>
+  <div mat-dialog-content>
+    <form #timerTaskForm="ngForm">
+      <mat-form-field class="full-width">
+        <mat-label>Task name</mat-label>
+        <input matInput [(ngModel)]="tpl.name" name="name" placeholder="Outperform 2019" required>
+      </mat-form-field>
+
+      <mat-form-field class="half-width">
+        <mat-label>Where to begin counting</mat-label>
+        <input matInput [(ngModel)]="tpl.x" name="x" placeholder="1" type="number" required>
+      </mat-form-field>
+      <mat-form-field class="half-width right">
+        <mat-label>Where to stop counting</mat-label>
+        <input matInput [(ngModel)]="tpl.y" name="y" placeholder="100" type="number" required>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="tpl" [disabled]="!timerTaskForm.form.valid" cdkFocusInitial>Create Task</button>
+  </div>
+</ng-container>

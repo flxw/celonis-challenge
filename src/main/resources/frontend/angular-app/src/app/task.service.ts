@@ -1,5 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { TaskCreationPayload } from './task-creation-payload';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -39,5 +40,10 @@ export class TaskService implements OnInit {
   startTask(taskId) {
     let requestUrl = this.SERVER_ADDRESS + this.TASK_API + taskId + "/execute";
     return this.http.post(requestUrl, null, httpOptions);
+  }
+
+  createTask(tpl:TaskCreationPayload) {
+    let requestUrl = this.SERVER_ADDRESS + this.TASK_API;
+    return this.http.post(requestUrl, tpl, httpOptions);
   }
 }

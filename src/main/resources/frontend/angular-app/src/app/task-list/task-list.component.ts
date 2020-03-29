@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../task.service';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { TaskCreationDialogComponent } from '../task-creation-dialog/task-creation-dialog.component';
+import { TimerTaskCreationDialogComponent } from '../timer-task-creation-dialog/timer-task-creation-dialog.component';
 
 @Component({
   selector: 'app-task-list',
@@ -36,7 +36,7 @@ export class TaskListComponent implements OnInit {
 
   downloadResult(taskId:string) {
     /* TODO trigger download here
-    * > task creation wizard
+    * > task creation wizard (what else needs to be set except name?! nothing right....)
     * > Refactor Task Runner so it does not need to know about timer logic
     * > Clean up task formatting with enum location etc
     * > finalize challenge today!
@@ -44,14 +44,27 @@ export class TaskListComponent implements OnInit {
   }
 
 
-  openTaskCreationDialog(): void {
-    const dialogRef = this.dialog.open(TaskCreationDialogComponent, {
-      width: '250px',
+  openTimerTaskCreationDialog(): void {
+    const dialogRef = this.dialog.open(TimerTaskCreationDialogComponent, {
+      width: '600px',
+    });
+
+    let that = this;
+
+    dialogRef.afterClosed().subscribe(payload => {
+      that.taskService.createTask(payload).subscribe(r => this.updateTaskList());
+    });
+  }
+
+  openProjectgenerationTaskCreationDialog(): void {
+    /*const dialogRef = this.dialog.open(TaskCreationDialogComponent, {
+      width: '600px',
+      height: '300px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
-    });
+    });*/
   }
 
   filterOnTaskType(type:string) {

@@ -8,9 +8,7 @@ public class TaskCreationPayload {
         PROJECTGENERATION_TASK
     };
 
-    public String id;
     public String name;
-    public Date creationDate;
     public TYPE type;
     public int x;
     public int y;
@@ -28,8 +26,7 @@ public class TaskCreationPayload {
                 break;
         }
 
-        t.setId(id);
-        t.setCreationDate(creationDate);
+        t.setCreationDate(new Date());
         t.setName(name);
 
         return t;

@@ -2,10 +2,16 @@
     <div mat-subheader>
         Generation tasks
         <span class="spacer"></span>
-        <button mat-button (click)="openTaskCreationDialog()">
-            Add task
-            <mat-icon class="example-icon">add</mat-icon>
+
+        <button mat-button [matMenuTriggerFor]="menu">
+          Add task...
+          <mat-icon>add</mat-icon>
         </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="openTimerTaskCreationDialog()">Schedule a timer</button>
+          <button mat-menu-item (click)="openProjectgenerationTaskCreationDialog">Generate a project</button>
+        </mat-menu>
+
         <button mat-button (click)="updateTaskList()">
             Refresh all
             <mat-icon class="example-icon">refresh</mat-icon>
@@ -26,13 +32,13 @@
 <ng-template #task let-task="task">
     <mat-list-item>
         <mat-icon matListIcon>folder</mat-icon>
-        
-        <div mat-line>{{task.id}}</div>
-        <div mat-line> {{task.creationDate | date}} </div>
+
+        <div mat-line>{{task.name}}</div>
+        <div mat-line> {{ task.id }} | {{task.creationDate | date}} </div>
 
         <mat-progress-bar mode="determinate" value="{{task.progress}}"></mat-progress-bar>
         <div class="distancer"></div>
-        
+
         <button mat-icon-button (click)="deleteTask(task.id)">
             <mat-icon>delete</mat-icon>
         </button>
