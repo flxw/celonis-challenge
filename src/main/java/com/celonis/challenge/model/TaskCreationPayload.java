@@ -15,17 +15,12 @@ public class TaskCreationPayload {
     public int x;
     public int y;
 
-    public TYPE getType() {
-        return type;
-    }
-
     public Task generateTask() {
         Task t = null;
 
         switch (this.type) {
             case TIMER_TASK:
-                TimerTask tt = new TimerTask(x,y);
-                t = tt;
+                t = new TimerTask(x,y);
                 break;
 
             case PROJECTGENERATION_TASK:
