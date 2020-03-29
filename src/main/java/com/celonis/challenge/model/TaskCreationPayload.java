@@ -24,9 +24,7 @@ public class TaskCreationPayload {
 
         switch (this.type) {
             case TIMER_TASK:
-                TimerTask tt = new TimerTask();
-                tt.setStart(x);
-                tt.setEnd(y);
+                TimerTask tt = new TimerTask(x,y);
                 t = tt;
                 break;
 

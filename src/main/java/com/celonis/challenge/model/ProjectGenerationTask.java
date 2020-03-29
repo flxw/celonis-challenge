@@ -13,6 +13,11 @@ public class ProjectGenerationTask extends Task {
     @JsonIgnore
     private String storageLocation;
 
+    public ProjectGenerationTask() {
+        super();
+        setType("projectgeneration");
+    }
+
     public String getStorageLocation() {
         return storageLocation;
     }

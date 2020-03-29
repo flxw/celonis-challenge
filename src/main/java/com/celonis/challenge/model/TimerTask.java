@@ -8,6 +8,17 @@ public class TimerTask extends Task {
     private int end;
     private int current = Integer.MIN_VALUE;
 
+    public TimerTask() {
+        super();
+    }
+
+    public TimerTask(int start, int end) {
+        super();
+        this.start = start;
+        this.end = end;
+        setType("timer");
+    }
+
     public void setStart(int start) {
         this.start = start;
     }

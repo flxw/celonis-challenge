@@ -42,6 +42,13 @@ public class TaskService {
         this.taskRepository = taskRepository;
         this.taskExecutor = taskExecutor;
         this.executedTaskMap = new HashMap<>();
+
+        TaskCreationPayload tp = new TaskCreationPayload();
+        tp.creationDate = new Date();
+        tp.type = TaskCreationPayload.TYPE.TIMER_TASK;
+        tp.x = 1;
+        tp.y = 100;
+        createTask(tp);
     }
 
     public List<Task> listTasks() {

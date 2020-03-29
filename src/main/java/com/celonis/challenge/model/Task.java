@@ -19,6 +19,7 @@ public abstract class Task {
     private Date creationDate;
     private boolean hasConsumableResult = false;
     private double progress = 0.0;
+    private String type;
 
     public enum STATE { READY, QUEUED, CANCELED, DONE };
     private STATE state = STATE.READY;
@@ -69,5 +70,21 @@ public abstract class Task {
 
     public STATE getState() {
         return state;
+    }
+
+    public boolean isHasConsumableResult() {
+        return hasConsumableResult;
+    }
+
+    public void setHasConsumableResult(boolean hasConsumableResult) {
+        this.hasConsumableResult = hasConsumableResult;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
