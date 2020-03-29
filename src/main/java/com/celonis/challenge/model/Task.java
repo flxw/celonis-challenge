@@ -21,7 +21,7 @@ public abstract class Task {
     private double progress = 0.0;
     private String type;
 
-    public enum STATE { READY, QUEUED, CANCELED, DONE };
+    public enum STATE { READY, QUEUED, RUNNING, DONE };
     private STATE state = STATE.READY;
 
     public String getId() {

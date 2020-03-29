@@ -14,11 +14,13 @@ public class TaskRunner implements Runnable {
 
     @Override
     public void run() {
+        t.setState(Task.STATE.RUNNING);
+        
         while (t.getProgress() < 100) {
             try {
                 t.executeStep();
             } catch (InterruptedException e) {
-                t.setState(Task.STATE.CANCELED);
+                t.setState(Task.STATE.READY);
                 taskRepository.save(t);
                 return;
             }

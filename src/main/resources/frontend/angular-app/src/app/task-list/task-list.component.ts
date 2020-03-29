@@ -27,10 +27,12 @@ export class TaskListComponent implements OnInit {
     this.taskService.deleteTask(taskId).subscribe(r => this.updateTaskList());
   }
 
+  startTask(taskId:string) {
+    this.taskService.startTask(taskId).subscribe(r => this.updateTaskList());
+  }
+
   downloadResult(taskId:string) {
     /* TODO trigger download here
-    * > refactor task creation endpoints to be separate for projectgeneration and timer
-    * > Refactor task creation payload object
     * > task creation wizard
     * > Refactor Task Runner so it does not need to know about timer logic
     * > Clean up task formatting with enum location etc
@@ -39,6 +41,6 @@ export class TaskListComponent implements OnInit {
   }
 
   filterOnTaskType(type:string) {
-    return this.taskList.filter(task => task.type = 1);
+    return this.taskList.filter(task => task.type == type);
   }
 }

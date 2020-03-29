@@ -105,6 +105,7 @@ public class TaskService {
 
         if (t != null) {
             this.executedTaskMap.get(taskId).cancel(true);
+            this.executedTaskMap.remove(taskId);
         }
     }
 

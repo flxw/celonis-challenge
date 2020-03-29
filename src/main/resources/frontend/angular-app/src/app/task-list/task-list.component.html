@@ -6,7 +6,20 @@
             <mat-icon class="example-icon">refresh</mat-icon>
         </button>
     </div>
-    <mat-list-item *ngFor="let task of taskList">
+    <ng-container *ngFor="let t of filterOnTaskType('projectgeneration')">
+        <ng-container *ngTemplateOutlet="task; context:{task: t}"></ng-container>
+    </ng-container>
+
+    <mat-divider></mat-divider>
+
+    <div mat-subheader>Timer tasks</div>
+    <ng-container *ngFor="let t of filterOnTaskType('timer')">
+        <ng-container *ngTemplateOutlet="task; context:{task: t}"></ng-container>
+    </ng-container>
+</mat-list>
+
+<ng-template #task let-task="task">
+    <mat-list-item>
         <mat-icon matListIcon>folder</mat-icon>
         
         <div mat-line>{{task.id}}</div>
@@ -18,24 +31,20 @@
         <button mat-icon-button (click)="deleteTask(task.id)">
             <mat-icon>delete</mat-icon>
         </button>
-        <button mat-icon-button (click)="cancelTask(task.id)">
+        <button mat-icon-button
+            *ngIf="task.state == 'READY'"
+            (click)="startTask(task.id)">
+            <mat-icon>play_arrow</mat-icon>
+        </button>
+        <button mat-icon-button
+            *ngIf="task.state == 'QUEUED' || task.state == 'RUNNING'"
+            (click)="cancelTask(task.id)">
             <mat-icon>cancel</mat-icon>
         </button>
-        <button mat-icon-button (click)="downloadResult(task.id)">
+        <button mat-icon-button
+            *ngIf="task.hasConsumableResult"
+            (click)="downloadResult(task.id)">
             <mat-icon>get_app</mat-icon>
         </button>
     </mat-list-item>
-    <mat-divider></mat-divider>
-    <!--<div mat-subheader>Timer tasks</div>
-    <mat-list-item *ngFor="let task of taskList">
-        <mat-icon mat-list-icon>note</mat-icon>
-        <div mat-line>{{note.name}}</div>
-        <div mat-line> {{note.updated | date}} </div>
-        <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
-
-        <mat-action-list>
-        <button mat-list-item> Save </button>
-        <button mat-list-item> Undo </button>
-        </mat-action-list>
-    </mat-list-item>    -->
-</mat-list>
+</ng-template>

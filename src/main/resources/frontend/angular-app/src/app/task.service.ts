@@ -35,4 +35,9 @@ export class TaskService implements OnInit {
     let requestUrl = this.SERVER_ADDRESS + this.TASK_API + taskId;
     return this.http.delete(requestUrl, httpOptions);
   }
+
+  startTask(taskId) {
+    let requestUrl = this.SERVER_ADDRESS + this.TASK_API + taskId + "/execute";
+    return this.http.post(requestUrl, null, httpOptions);
+  }
 }
