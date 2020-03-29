@@ -18,12 +18,14 @@ import {FormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
 import { TimerTaskCreationDialogComponent } from './timer-task-creation-dialog/timer-task-creation-dialog.component';
+import { ProjectgenerationTaskCreationDialogComponent } from './projectgeneration-task-creation-dialog/projectgeneration-task-creation-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TaskListComponent,
     TimerTaskCreationDialogComponent,
+    ProjectgenerationTaskCreationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,7 +44,7 @@ import { TimerTaskCreationDialogComponent } from './timer-task-creation-dialog/t
     MatInputModule,
     MatMenuModule
   ],
-  entryComponents: [TimerTaskCreationDialogComponent],
+  entryComponents: [TimerTaskCreationDialogComponent, ProjectgenerationTaskCreationDialogComponent],
   providers: [],
   bootstrap: [AppComponent]
 })

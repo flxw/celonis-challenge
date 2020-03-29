@@ -18,8 +18,4 @@ export class TimerTaskCreationDialogComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
-
-  isDataComplete():boolean {
-    return this.tpl.x !== undefined && this.tpl.y !== undefined && this.tpl.name !== "";
-  }
 }
