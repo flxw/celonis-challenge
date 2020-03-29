@@ -26,5 +26,8 @@ public class TaskRunner implements Runnable {
             }
             taskRepository.save(t);
         }
+
+        t.setState(Task.STATE.DONE);
+        taskRepository.save(t);
     }
 }

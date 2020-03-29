@@ -28,7 +28,7 @@ public class ProjectGenerationTask extends Task {
 
     @Override
     public void executeStep() {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("challenge.zip");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("file.zip");
 
         if (url == null) {
             throw new InternalException("Zip file not found");
