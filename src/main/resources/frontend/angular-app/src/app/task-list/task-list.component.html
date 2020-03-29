@@ -2,6 +2,10 @@
     <div mat-subheader>
         Generation tasks
         <span class="spacer"></span>
+        <button mat-button (click)="openTaskCreationDialog()">
+            Add task
+            <mat-icon class="example-icon">add</mat-icon>
+        </button>
         <button mat-button (click)="updateTaskList()">
             Refresh all
             <mat-icon class="example-icon">refresh</mat-icon>

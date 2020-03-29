@@ -11,11 +11,14 @@ import { HttpClientModule }    from '@angular/common/http';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';  
 import {MatButtonModule} from '@angular/material/button';
+import { TaskCreationDialogComponent } from './task-creation-dialog/task-creation-dialog.component';
+import {MatDialogModule} from '@angular/material/dialog'; 
 
 @NgModule({
   declarations: [
     AppComponent,
     TaskListComponent,
+    TaskCreationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -26,7 +29,8 @@ import {MatButtonModule} from '@angular/material/button';
     HttpClientModule,
     MatProgressBarModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

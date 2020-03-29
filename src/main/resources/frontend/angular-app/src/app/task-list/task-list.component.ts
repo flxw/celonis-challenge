@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../task.service';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { TaskCreationDialogComponent } from '../task-creation-dialog/task-creation-dialog.component';
 
 @Component({
   selector: 'app-task-list',
@@ -7,9 +9,10 @@ import { TaskService } from '../task.service';
   styleUrls: ['./task-list.component.styl']
 })
 export class TaskListComponent implements OnInit {
-  public taskList:any;
+  public taskList:any = [];
 
-  constructor(private taskService:TaskService) { }
+  constructor(private taskService:TaskService,
+              private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.updateTaskList();
@@ -38,6 +41,17 @@ export class TaskListComponent implements OnInit {
     * > Clean up task formatting with enum location etc
     * > finalize challenge today!
     */
+  }
+
+
+  openTaskCreationDialog(): void {
+    const dialogRef = this.dialog.open(TaskCreationDialogComponent, {
+      width: '250px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   filterOnTaskType(type:string) {
