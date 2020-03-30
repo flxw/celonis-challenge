@@ -28,7 +28,7 @@ public class TimerTask extends Task {
     }
 
     @Override
-    public void executeStep() throws InterruptedException {
+    public void executeStep() {
         if (current == Integer.MIN_VALUE) {
             current = start;
         } else if (current == end) {
@@ -37,6 +37,5 @@ public class TimerTask extends Task {
 
         current++;
         setProgress(current/(double)end * 100);
-        Thread.sleep(1000);
     }
 }

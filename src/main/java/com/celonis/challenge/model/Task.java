@@ -60,7 +60,7 @@ public abstract class Task {
         this.progress = progress;
     }
 
-    public void executeStep() throws InterruptedException {
+    public void executeStep() {
         this.progress = 100;
     }
 

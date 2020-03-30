@@ -1,16 +1,13 @@
 package com.celonis.challenge.services;
 
-import com.celonis.challenge.exceptions.InternalException;
 import com.celonis.challenge.exceptions.NotFoundException;
 import com.celonis.challenge.model.ProjectGenerationTask;
+import com.celonis.challenge.model.Task;
 import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.model.TaskRepository;
-import com.celonis.challenge.model.Task;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,15 +16,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.URL;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -67,12 +62,8 @@ public class TaskService {
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
 
-        existing.setState(Task.STATE.QUEUED);
+        existing.setState(Task.STATE.RUNNING);
         taskRepository.save(existing);
-
-        TaskRunner runner = new TaskRunner(taskRepository, existing);
-        Future f = this.taskExecutor.submit(runner);
-        executedTaskMap.put(taskId, f);
     }
 
     public Task getTask(String taskId) {
@@ -94,12 +85,9 @@ public class TaskService {
     }
 
     public void cancelTask(String taskId) {
-        Future t = this.executedTaskMap.getOrDefault(taskId, null);
-
-        if (t != null) {
-            this.executedTaskMap.get(taskId).cancel(true);
-            this.executedTaskMap.remove(taskId);
-        }
+        Task t = taskRepository.findOne(taskId);
+        t.setState(Task.STATE.READY);
+        taskRepository.save(t);
     }
 
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
@@ -124,6 +112,21 @@ public class TaskService {
             }
 
             taskRepository.delete(t);
+        }
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    public void runJobSteps() {
+        List<Task> runningJobs = taskRepository.findByState(Task.STATE.RUNNING);
+
+        for (Task t : runningJobs) {
+            t.executeStep();
+
+            if (t.getProgress() >= 100.0) {
+                t.setState(Task.STATE.DONE);
+            }
+
+            taskRepository.save(t);
         }
     }
 
