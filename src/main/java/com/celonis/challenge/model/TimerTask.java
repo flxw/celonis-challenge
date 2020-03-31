@@ -4,38 +4,38 @@ import javax.persistence.Entity;
 
 @Entity
 public class TimerTask extends Task {
-    private int start;
-    private int end;
+    private int x;
+    private int y;
     private int current = Integer.MIN_VALUE;
 
     public TimerTask() {
         super();
     }
 
-    public TimerTask(int start, int end) {
+    public TimerTask(int x, int y) {
         super();
-        this.start = start;
-        this.end = end;
+        this.x = x;
+        this.y = y;
         setType("timer");
     }
 
-    public void setStart(int start) {
-        this.start = start;
+    public void setX(int x) {
+        this.x = x;
     }
 
-    public void setEnd(int end) {
-        this.end = end;
+    public void setY(int y) {
+        this.y = y;
     }
 
     @Override
     public void executeStep() {
         if (current == Integer.MIN_VALUE) {
-            current = start;
-        } else if (current == end) {
+            current = x;
+        } else if (current == y) {
             return;
         }
 
         current++;
-        setProgress(current/(double)end * 100);
+        setProgress(current/(double) y * 100);
     }
 }
