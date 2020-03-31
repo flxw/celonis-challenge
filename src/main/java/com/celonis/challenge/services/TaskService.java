@@ -5,6 +5,7 @@ import com.celonis.challenge.model.ProjectGenerationTask;
 import com.celonis.challenge.model.Task;
 import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.model.TaskRepository;
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -17,7 +18,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +32,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private ThreadPoolTaskExecutor taskExecutor;
     private Map<String,Future> executedTaskMap;
+    private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
     public TaskService(TaskRepository taskRepository, ThreadPoolTaskExecutor taskExecutor) {
         this.taskRepository = taskRepository;
@@ -61,7 +62,6 @@ public class TaskService {
 
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
-
         existing.setState(Task.STATE.RUNNING);
         taskRepository.save(existing);
     }
@@ -90,10 +90,6 @@ public class TaskService {
         taskRepository.save(t);
     }
 
-    private static final Logger log = LoggerFactory.getLogger(TaskService.class);
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
     @Scheduled(fixedDelay = 7*24*60*60*1000)
     public void cleanUpJobs() {
         Date today = new Date();
@@ -115,11 +111,13 @@ public class TaskService {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
-    public void runJobSteps() {
-        List<Task> runningJobs = taskRepository.findByState(Task.STATE.RUNNING);
 
-        for (Task t : runningJobs) {
+    @Scheduled(fixedDelay = 1000)
+    @SchedulerLock(name = "TaskService_runTaskSteps")
+    public void runTaskSteps() {
+        List<Task> runningTasks = taskRepository.findByState(Task.STATE.RUNNING);
+
+        for (Task t : runningTasks) {
             t.executeStep();
 
             if (t.getProgress() >= 100.0) {

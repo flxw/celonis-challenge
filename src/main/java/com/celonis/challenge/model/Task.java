@@ -58,7 +58,7 @@ public abstract class Task {
     }
 
     public void executeStep() {
-        this.progress = 100;
+        System.out.println(this.getClass().toString() + "did not reimplement executeStep()!");
     }
 
     public void setState(STATE state) {
