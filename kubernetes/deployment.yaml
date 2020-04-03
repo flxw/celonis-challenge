@@ -18,13 +18,28 @@ spec:
         app: celonischallenge
     spec:
       containers:
-      - name: challenge
-        image: challenge-09
-        resources: {}
-        imagePullPolicy: IfNotPresent
-        ports:
-         - containerPort: 8080
-status: {}
+        - name: challenge
+          image: challenge-10
+          resources: {}
+          imagePullPolicy: IfNotPresent
+          ports:
+           - containerPort: 8080
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: challenge-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: challenge-secrets
+                  key: DB_PASSWORD
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: challenge-secrets
+                  key: AUTH_SECRET
 ---
 kind: Service
 apiVersion: v1
@@ -48,3 +63,12 @@ spec:
     nodePort: 30163
     port: 33333
     targetPort: 8080
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: challenge-secrets
+data:
+  DB_USER: Y2hhbGxlbmdl
+  DB_PASSWORD: cGFzc3dvcmQxMjM=
+  AUTH_SECRET: dG90YWxseV9zZWNyZXQ=

@@ -13,7 +13,7 @@ import java.io.IOException;
 public class SimpleHeaderFilter extends OncePerRequestFilter {
 
     private final String HEADER_NAME = "Celonis-Auth";
-    private final String HEADER_VALUE = "totally_secret";
+    private String HEADER_VALUE = System.getenv("AUTH_SECRET");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
