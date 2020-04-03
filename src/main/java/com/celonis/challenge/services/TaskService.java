@@ -5,7 +5,7 @@ import com.celonis.challenge.model.ProjectGenerationTask;
 import com.celonis.challenge.model.Task;
 import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.model.TaskRepository;
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -30,13 +29,11 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private ThreadPoolTaskExecutor taskExecutor;
     private Map<String,Future> executedTaskMap;
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
-    public TaskService(TaskRepository taskRepository, ThreadPoolTaskExecutor taskExecutor) {
+    public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.taskExecutor = taskExecutor;
         this.executedTaskMap = new HashMap<>();
     }
 
@@ -112,8 +109,8 @@ public class TaskService {
     }
 
 
-    @Scheduled(fixedDelay = 1000)
-    @SchedulerLock(name = "TaskService_runTaskSteps")
+    @Scheduled(fixedRate = 1000)
+    @SchedulerLock(name = "TaskService_runTaskSteps", lockAtLeastFor = "800ms", lockAtMostFor = "1s")
     public void runTaskSteps() {
         List<Task> runningTasks = taskRepository.findByState(Task.STATE.RUNNING);
 

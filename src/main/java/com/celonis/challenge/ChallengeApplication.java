@@ -1,13 +1,19 @@
 package com.celonis.challenge;
 
+import net.javacrumbs.shedlock.core.LockProvider;
+import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.context.annotation.Bean;
+
+import javax.sql.DataSource;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "60s")
 public class ChallengeApplication {
     public static void main(String[] args) {
         SpringApplication.run(ChallengeApplication.class, args);
@@ -22,5 +28,10 @@ public class ChallengeApplication {
         t.setAllowCoreThreadTimeOut(true);
         t.setKeepAliveSeconds(120);
         return t;
+    }
+
+    @Bean
+    public LockProvider lockProvider(DataSource dataSource) {
+        return new JdbcTemplateLockProvider(dataSource, "public.shedlock");
     }
 }
