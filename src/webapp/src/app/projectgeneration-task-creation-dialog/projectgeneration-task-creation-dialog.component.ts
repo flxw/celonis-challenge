@@ -11,7 +11,7 @@ export class ProjectgenerationTaskCreationDialogComponent {
   public tpl:TaskCreationPayload = new TaskCreationPayload();
 
   constructor(public dialogRef: MatDialogRef<ProjectgenerationTaskCreationDialogComponent>) {
-    this.tpl.type = "PROJECTGENERATION_TASK";
+    this.tpl.type = "projectgeneration";
   }
 
   onNoClick(): void {

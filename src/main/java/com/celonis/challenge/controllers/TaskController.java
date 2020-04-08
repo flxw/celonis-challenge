@@ -27,7 +27,7 @@ public class TaskController {
     }
 
     @PostMapping("/")
-    public Task createTask(@RequestBody TaskCreationPayload taskCreationPayload) {
+    public Task createTask(@RequestBody @Valid TaskCreationPayload taskCreationPayload) {
         return taskService.createTask(taskCreationPayload);
     }
 
@@ -38,8 +38,8 @@ public class TaskController {
 
     @PutMapping("/{taskId}")
     public Task updateTask(@PathVariable String taskId,
-                           @RequestBody @Valid Task projectGenerationTask) {
-        return taskService.update(taskId, projectGenerationTask);
+                           @RequestBody @Valid TaskCreationPayload pl) {
+        return taskService.update(taskId, pl);
     }
 
     @CrossOrigin(origins = "*")

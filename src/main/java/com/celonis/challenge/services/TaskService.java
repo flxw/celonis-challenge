@@ -46,11 +46,10 @@ public class TaskService {
         return taskRepository.save(t);
     }
 
-    public Task update(String taskId, Task deltaTask) {
-        Task existing = getTask(taskId);
-        existing.setCreationDate(deltaTask.getCreationDate());
-        existing.setName(deltaTask.getName());
-        return taskRepository.save(existing);
+    public Task update(String taskId, TaskCreationPayload tpl) {
+        Task deltaTask = tpl.generateTask();
+        deltaTask.setId(taskId);
+        return taskRepository.save(deltaTask);
     }
 
     public void delete(String taskId) {
@@ -88,6 +87,7 @@ public class TaskService {
     }
 
     @Scheduled(fixedDelay = 7*24*60*60*1000)
+    @SchedulerLock(name = "TaskService_cleanUpJobs", lockAtLeastFor = "5s", lockAtMostFor = "3600s")
     public void cleanUpJobs() {
         Date today = new Date();
         List<Task> tasks = taskRepository
