@@ -5,7 +5,6 @@ import com.celonis.challenge.model.ProjectGenerationTask;
 import com.celonis.challenge.model.Task;
 import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.model.TaskRepository;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -13,21 +12,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
-
     private final TaskRepository taskRepository;
     private Map<String,Future> executedTaskMap;
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
@@ -53,7 +47,7 @@ public class TaskService {
     }
 
     public void delete(String taskId) {
-        taskRepository.delete(taskId);
+        taskRepository.deleteById(taskId);
     }
 
     public void executeTask(String taskId) {
@@ -63,11 +57,13 @@ public class TaskService {
     }
 
     public Task getTask(String taskId) {
-        Task projectGenerationTask = taskRepository.findOne(taskId);
-        if (projectGenerationTask == null) {
+        Optional<Task> taskOpt = taskRepository.findById(taskId);
+
+        if (!taskOpt.isPresent()) {
             throw new NotFoundException();
         }
-        return projectGenerationTask;
+
+        return taskOpt.get();
     }
 
     public ResponseEntity getTaskResult(ProjectGenerationTask existing) {
@@ -81,13 +77,18 @@ public class TaskService {
     }
 
     public void cancelTask(String taskId) {
-        Task t = taskRepository.findOne(taskId);
+        Optional<Task> optionalTask = taskRepository.findById(taskId);
+
+        if (!optionalTask.isPresent()) {
+            return;
+        }
+
+        Task t = optionalTask.get();
+
         t.setState(Task.STATE.READY);
         taskRepository.save(t);
     }
 
-    @Scheduled(fixedDelay = 7*24*60*60*1000)
-    @SchedulerLock(name = "TaskService_cleanUpJobs", lockAtLeastFor = "5s", lockAtMostFor = "3600s")
     public void cleanUpJobs() {
         Date today = new Date();
         List<Task> tasks = taskRepository
@@ -108,25 +109,10 @@ public class TaskService {
         }
     }
 
-
-    @Scheduled(fixedRate = 1000)
-    @SchedulerLock(name = "TaskService_runTaskSteps", lockAtLeastFor = "800ms", lockAtMostFor = "1s")
-    public void runTaskSteps() {
-        List<Task> runningTasks = taskRepository.findByState(Task.STATE.RUNNING);
-
-        for (Task t : runningTasks) {
-            t.executeStep();
-
-            if (t.getProgress() >= 100.0) {
-                t.setState(Task.STATE.DONE);
-            }
-
-            taskRepository.save(t);
-        }
-    }
-
     private static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
         long diffInMillies = date2.getTime() - date1.getTime();
         return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
     }
 }
+
+
