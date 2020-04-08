@@ -1,8 +1,8 @@
 package com.celonis.challenge.model;
 
-import com.celonis.challenge.exceptions.InternalException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.io.IOUtils;
+import org.quartz.*;
 
 import javax.persistence.Entity;
 import java.io.*;
@@ -14,8 +14,7 @@ public class ProjectGenerationTask extends Task {
     private String storageLocation;
 
     public ProjectGenerationTask() {
-        super();
-        setType("projectgeneration");
+        setType("PROJECTGENERATION");
     }
 
     public String getStorageLocation() {
@@ -24,24 +23,6 @@ public class ProjectGenerationTask extends Task {
 
     public void setStorageLocation(String storageLocation) {
         this.storageLocation = storageLocation;
-    }
-
-    @Override
-    public void executeStep() {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("file.zip");
-
-        if (url == null) {
-            throw new InternalException("Zip file not found");
-        }
-
-        try {
-            storeResult(url);
-        } catch (Exception e) {
-            throw new InternalException(e);
-        }
-
-        setProgress(100);
-        setHasConsumableResult(true);
     }
 
     public void storeResult(URL url) throws IOException {
@@ -53,6 +34,39 @@ public class ProjectGenerationTask extends Task {
         try (InputStream is = url.openStream();
              OutputStream os = new FileOutputStream(outputFile)) {
             IOUtils.copy(is, os);
+        }
+    }
+
+    @Override
+    public JobDetail createTaskJobDetail() {
+        return null;
+    }
+
+    @Override
+    public ScheduleBuilder createTaskTrigger() {
+        return null;
+    }
+
+    private class ProjectGenerationTaskJob implements Job {
+        public ProjectGenerationTaskJob() {
+        }
+
+        @Override
+        public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+            /*URL url = Thread.currentThread().getContextClassLoader().getResource("file.zip");
+
+            if (url == null) {
+                throw new InternalException("Zip file not found");
+            }
+
+            try {
+                storeResult(url);
+            } catch (Exception e) {
+                throw new InternalException(e);
+            }
+
+            setProgress(100);
+            setHasConsumableResult(true);*/
         }
     }
 }

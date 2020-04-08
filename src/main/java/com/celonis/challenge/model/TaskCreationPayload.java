@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class TaskCreationPayload {
     public enum TYPE {
-        TIMER_TASK,
-        PROJECTGENERATION_TASK
+        TIMER,
+        PROJECTGENERATION
     };
 
     public String name;
@@ -17,11 +17,11 @@ public class TaskCreationPayload {
         Task t = null;
 
         switch (this.type) {
-            case TIMER_TASK:
+            case TIMER:
                 t = new TimerTask(x,y);
                 break;
 
-            case PROJECTGENERATION_TASK:
+            case PROJECTGENERATION:
                 t = new ProjectGenerationTask();
                 break;
         }

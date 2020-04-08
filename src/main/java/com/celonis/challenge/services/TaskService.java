@@ -5,6 +5,7 @@ import com.celonis.challenge.model.ProjectGenerationTask;
 import com.celonis.challenge.model.Task;
 import com.celonis.challenge.model.TaskCreationPayload;
 import com.celonis.challenge.model.TaskRepository;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -23,11 +25,14 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final SchedulerFactoryBean scheduler;
+
     private Map<String,Future> executedTaskMap;
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, SchedulerFactoryBean scheduler) {
         this.taskRepository = taskRepository;
+        this.scheduler = scheduler;
         this.executedTaskMap = new HashMap<>();
     }
 
@@ -52,8 +57,19 @@ public class TaskService {
 
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
-        existing.setState(Task.STATE.RUNNING);
-        taskRepository.save(existing);
+        JobDetail job = existing.createTaskJobDetail();
+        ScheduleBuilder ssb = existing.createTaskTrigger();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(job)
+                .withIdentity("trigger", taskId)
+                .withSchedule(ssb)
+                .build();
+
+        try {
+            scheduler.getScheduler().scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
     }
 
     public Task getTask(String taskId) {
@@ -87,6 +103,9 @@ public class TaskService {
 
         t.setState(Task.STATE.READY);
         taskRepository.save(t);
+
+        // scheduler.deleteJob(jobName, jobGroup);
+        // TODO: when deleting, cancel first!
     }
 
     public void cleanUpJobs() {

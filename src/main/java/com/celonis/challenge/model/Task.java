@@ -1,6 +1,8 @@
 package com.celonis.challenge.model;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.quartz.JobDetail;
+import org.quartz.ScheduleBuilder;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -49,16 +51,16 @@ public abstract class Task {
         return this.hasConsumableResult;
     }
 
+    public void setHasConsumableResult(boolean hasConsumableResult) {
+        this.hasConsumableResult = hasConsumableResult;
+    }
+
     public double getProgress() {
         return this.progress;
     }
 
     public void setProgress(double progress) {
         this.progress = progress;
-    }
-
-    public void executeStep() {
-        System.out.println(this.getClass().toString() + "did not reimplement executeStep()!");
     }
 
     public void setState(STATE state) {
@@ -69,14 +71,6 @@ public abstract class Task {
         return state;
     }
 
-    public boolean isHasConsumableResult() {
-        return hasConsumableResult;
-    }
-
-    public void setHasConsumableResult(boolean hasConsumableResult) {
-        this.hasConsumableResult = hasConsumableResult;
-    }
-
     public String getType() {
         return type;
     }
@@ -84,4 +78,8 @@ public abstract class Task {
     public void setType(String type) {
         this.type = type;
     }
+
+    public abstract JobDetail createTaskJobDetail();
+
+    public abstract ScheduleBuilder createTaskTrigger();
 }

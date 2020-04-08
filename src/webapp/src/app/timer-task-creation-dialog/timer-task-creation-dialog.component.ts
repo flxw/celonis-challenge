@@ -12,7 +12,7 @@ export class TimerTaskCreationDialogComponent {
   public tpl:TaskCreationPayload = new TaskCreationPayload();
 
   constructor(public dialogRef: MatDialogRef<TimerTaskCreationDialogComponent>) {
-    this.tpl.type = "timer";
+    this.tpl.type = "TIMER";
   }
 
   onNoClick(): void {

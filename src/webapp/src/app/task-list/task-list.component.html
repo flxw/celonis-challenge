@@ -17,14 +17,14 @@
             <mat-icon class="example-icon">refresh</mat-icon>
         </button>
     </div>
-    <ng-container *ngFor="let t of filterOnTaskType('projectgeneration')">
+    <ng-container *ngFor="let t of filterOnTaskType('PROJECTGENERATION')">
         <ng-container *ngTemplateOutlet="task; context:{task: t}"></ng-container>
     </ng-container>
 
     <mat-divider></mat-divider>
 
     <div mat-subheader>Timer tasks</div>
-    <ng-container *ngFor="let t of filterOnTaskType('timer')">
+    <ng-container *ngFor="let t of filterOnTaskType('TIMER')">
         <ng-container *ngTemplateOutlet="task; context:{task: t}"></ng-container>
     </ng-container>
 </mat-list>

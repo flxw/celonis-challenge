@@ -1,5 +1,10 @@
 package com.celonis.challenge.model;
 
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.ScheduleBuilder;
+import org.quartz.SimpleScheduleBuilder;
+
 import javax.persistence.Entity;
 
 @Entity
@@ -16,7 +21,7 @@ public class TimerTask extends Task {
         super();
         this.x = x;
         this.y = y;
-        setType("timer");
+        setType("TIMER");
     }
 
     public void setX(int x) {
@@ -28,14 +33,20 @@ public class TimerTask extends Task {
     }
 
     @Override
-    public void executeStep() {
-        if (current == Integer.MIN_VALUE) {
-            current = x;
-        } else if (current == y) {
-            return;
-        }
+    public JobDetail createTaskJobDetail() {
+        return JobBuilder.newJob(TimerTaskJob.class)
+                         .withIdentity("TimerTaskJob")
+                         .usingJobData("current", x)
+                         .usingJobData("y", y)
+                         .usingJobData("progress", 0)
+                         .storeDurably()
+                         .build();
+    }
 
-        current++;
-        setProgress(current/(double) y * 100);
+    @Override
+    public ScheduleBuilder createTaskTrigger() {
+        return SimpleScheduleBuilder.simpleSchedule()
+                                    .withIntervalInSeconds(1)
+                                    .withRepeatCount(y-x);
     }
 }
