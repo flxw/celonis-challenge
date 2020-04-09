@@ -5,21 +5,19 @@ import org.quartz.*;
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
 public class TimerTaskJob implements Job {
-    public TimerTaskJob() {
-    }
+
+    public TimerTaskJob() {}
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-            JobDataMap dataMap = jobExecutionContext.getJobDetail().getJobDataMap();
+        JobDataMap dataMap = jobExecutionContext.getJobDetail().getJobDataMap();
 
-            int current = dataMap.getInt("current");
-            int y = dataMap.getInt("y");
+        int current = dataMap.getInt("current");
+        int y = dataMap.getInt("y");
 
-            if (current < y) ++current;
+        if (current < y) ++current;
 
-            System.out.println(current + " - " +  y);
-
-            dataMap.put("current", current);
-            dataMap.put("progress", current/(double)y*100);
+        dataMap.put("current", current);
+        dataMap.put("progress", current/(double)y*100);
     }
 }

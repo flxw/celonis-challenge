@@ -79,6 +79,10 @@ public abstract class Task {
         this.type = type;
     }
 
+    protected String getJobGroup() {
+        return "Task";
+    }
+
     public abstract JobDetail createTaskJobDetail();
 
     public abstract ScheduleBuilder createTaskTrigger();

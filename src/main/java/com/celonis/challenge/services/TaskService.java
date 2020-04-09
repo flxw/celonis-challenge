@@ -1,10 +1,7 @@
 package com.celonis.challenge.services;
 
 import com.celonis.challenge.exceptions.NotFoundException;
-import com.celonis.challenge.model.ProjectGenerationTask;
-import com.celonis.challenge.model.Task;
-import com.celonis.challenge.model.TaskCreationPayload;
-import com.celonis.challenge.model.TaskRepository;
+import com.celonis.challenge.model.*;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,23 +14,30 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.*;
-import java.util.concurrent.Future;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
+import static org.quartz.impl.matchers.EverythingMatcher.allJobs;
 
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final SchedulerFactoryBean scheduler;
-
-    private Map<String,Future> executedTaskMap;
+    private final SchedulerFactoryBean schedulerFactory;
+    private JobListener progressPersisterListener;
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
-    public TaskService(TaskRepository taskRepository, SchedulerFactoryBean scheduler) {
+    public TaskService(TaskRepository taskRepository, SchedulerFactoryBean schedulerFactory) {
         this.taskRepository = taskRepository;
-        this.scheduler = scheduler;
-        this.executedTaskMap = new HashMap<>();
+        this.schedulerFactory = schedulerFactory;
+        this.progressPersisterListener = new ProgressPersisterListener(taskRepository);
+
+        try {
+            schedulerFactory.getScheduler().getListenerManager().addJobListener(progressPersisterListener, allJobs());
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Task> listTasks() {
@@ -52,6 +56,7 @@ public class TaskService {
     }
 
     public void delete(String taskId) {
+        cancelTask(taskId);
         taskRepository.deleteById(taskId);
     }
 
@@ -66,7 +71,7 @@ public class TaskService {
                 .build();
 
         try {
-            scheduler.getScheduler().scheduleJob(job, trigger);
+            schedulerFactory.getScheduler().scheduleJob(job, trigger);
             taskRepository.setStateFor(Task.STATE.RUNNING, taskId);
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -96,8 +101,7 @@ public class TaskService {
     public void cancelTask(String taskId) {
         JobKey jobToBeDeleted = new JobKey(taskId);
         try {
-            scheduler.getScheduler().deleteJob(jobToBeDeleted);
-
+            schedulerFactory.getScheduler().deleteJob(jobToBeDeleted);
             taskRepository.setStateFor(Task.STATE.READY, taskId);
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -105,6 +109,8 @@ public class TaskService {
     }
 
     public void cleanUpJobs() {
+        // TODO: refactor
+        /*
         Date today = new Date();
         List<Task> tasks = taskRepository
                 .findAll()
@@ -121,7 +127,7 @@ public class TaskService {
             }
 
             taskRepository.delete(t);
-        }
+        }*/
     }
 
     private static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {

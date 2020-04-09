@@ -35,10 +35,10 @@ public class TimerTask extends Task {
     @Override
     public JobDetail createTaskJobDetail() {
         return JobBuilder.newJob(TimerTaskJob.class)
-                         .withIdentity(getId())
+                         .withIdentity(getId(), getJobGroup())
                          .usingJobData("current", x)
                          .usingJobData("y", y)
-                         .usingJobData("progress", 0)
+                         .usingJobData("progress", 0.0)
                          .storeDurably()
                          .build();
     }

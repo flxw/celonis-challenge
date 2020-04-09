@@ -17,4 +17,9 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     @Modifying
     @Query("UPDATE Task SET state=:state WHERE id=:taskId")
     void setStateFor(@Param("state") Task.STATE state, @Param("taskId") String taskId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Task SET progress=:progress WHERE id=:taskId")
+    void setProgressFor(@Param("progress") double progress, @Param("taskId") String taskId);
 }
