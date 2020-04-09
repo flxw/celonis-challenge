@@ -27,6 +27,7 @@ public class QuartzConfiguration {
         factory.setOverwriteExistingJobs(true);
         factory.setDataSource(dataSource);
         factory.setQuartzProperties(properties);
+        factory.setApplicationContextSchedulerContextKey("applicationContext");
         return factory;
     }
 }

@@ -79,7 +79,7 @@ public abstract class Task {
         this.type = type;
     }
 
-    protected String getJobGroup() {
+    public static String getJobGroup() {
         return "Task";
     }
 

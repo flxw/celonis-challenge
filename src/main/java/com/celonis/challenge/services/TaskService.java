@@ -14,12 +14,10 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-import static org.quartz.impl.matchers.EverythingMatcher.allJobs;
+import static org.quartz.impl.matchers.GroupMatcher.jobGroupEquals;
 
 @Service
 public class TaskService {
@@ -35,10 +33,12 @@ public class TaskService {
 
         try {
             ListenerManager lm = schedulerFactory.getScheduler().getListenerManager();
-            lm.addJobListener(progressPersisterListener, allJobs());
+            lm.addJobListener(progressPersisterListener, jobGroupEquals(Task.getJobGroup()));
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
+
+        scheduleJanitor();
     }
 
     public List<Task> listTasks() {
@@ -105,31 +105,21 @@ public class TaskService {
         }
     }
 
-    public void cleanUpJobs() {
-        // TODO: refactor
-        /*
-        Date today = new Date();
-        List<Task> tasks = taskRepository
-                .findAll()
-                .stream()
-                .filter(t -> getDateDiff(t.getCreationDate(), today, TimeUnit.DAYS) > 7)
-                .collect(Collectors.toList());
+    public void scheduleJanitor() {
+        JobDetail janitorDetail = JobBuilder.newJob(JanitorJob.class)
+                    .storeDurably()
+                    .build();
 
-        for (Task t : tasks) {
-            String taskId = t.getId();
+        Trigger janitorTrigger = TriggerBuilder.newTrigger()
+                    .forJob(janitorDetail)
+                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 * * 0"))
+                    .build();
 
-            if (executedTaskMap.containsKey(taskId)) {
-                executedTaskMap.get(taskId).cancel(true);
-                executedTaskMap.remove(taskId);
-            }
-
-            taskRepository.delete(t);
-        }*/
-    }
-
-    private static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-        long diffInMillies = date2.getTime() - date1.getTime();
-        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+        try {
+            schedulerFactory.getScheduler().scheduleJob(janitorDetail, janitorTrigger);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
     }
 }
 
