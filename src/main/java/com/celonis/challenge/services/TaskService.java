@@ -99,7 +99,7 @@ public class TaskService {
         return new ResponseEntity<>(new FileSystemResource(inputFile), respHeaders, HttpStatus.OK);
     }
 
-3    public void cancelTask(String taskId) {
+    public void cancelTask(String taskId) {
         JobKey jobToBeDeleted = new JobKey(taskId);
         try {
             schedulerFactory.getScheduler().deleteJob(jobToBeDeleted);
