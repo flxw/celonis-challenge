@@ -34,7 +34,8 @@ public class TaskService {
         this.progressPersisterListener = new ProgressPersisterListener(taskRepository);
 
         try {
-            schedulerFactory.getScheduler().getListenerManager().addJobListener(progressPersisterListener, allJobs());
+            ListenerManager lm = schedulerFactory.getScheduler().getListenerManager();
+            lm.addJobListener(progressPersisterListener, allJobs());
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
@@ -98,11 +99,12 @@ public class TaskService {
         return new ResponseEntity<>(new FileSystemResource(inputFile), respHeaders, HttpStatus.OK);
     }
 
-    public void cancelTask(String taskId) {
+3    public void cancelTask(String taskId) {
         JobKey jobToBeDeleted = new JobKey(taskId);
         try {
             schedulerFactory.getScheduler().deleteJob(jobToBeDeleted);
             taskRepository.setStateFor(Task.STATE.READY, taskId);
+            taskRepository.setProgressFor(0.0, taskId);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
