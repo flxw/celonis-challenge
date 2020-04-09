@@ -27,5 +27,9 @@ public class ProgressPersisterListener implements JobListener {
         double progress = jobExecutionContext.getJobDetail().getJobDataMap().getDouble("progress");
         String taskId = jobExecutionContext.getJobDetail().getKey().getName();
         taskRepository.setProgressFor(progress, taskId);
+
+        if (progress >= 100.0) {
+            taskRepository.setStateFor(Task.STATE.DONE, taskId);
+        }
     }
 }
