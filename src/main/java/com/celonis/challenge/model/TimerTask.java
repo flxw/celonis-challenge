@@ -1,9 +1,6 @@
 package com.celonis.challenge.model;
 
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.ScheduleBuilder;
-import org.quartz.SimpleScheduleBuilder;
+import org.quartz.*;
 
 import javax.persistence.Entity;
 
@@ -44,9 +41,15 @@ public class TimerTask extends Task {
     }
 
     @Override
-    public ScheduleBuilder createTaskTrigger() {
-        return SimpleScheduleBuilder.simpleSchedule()
+    public Trigger createTaskTrigger(JobDetail job) {
+        SimpleScheduleBuilder ssb = SimpleScheduleBuilder.simpleSchedule()
                                     .withIntervalInSeconds(1)
                                     .withRepeatCount(y-x);
+
+        return TriggerBuilder.newTrigger()
+                .forJob(job)
+                .withIdentity("trigger", getId())
+                .withSchedule(ssb)
+                .build();
     }
 }

@@ -1,12 +1,14 @@
 package com.celonis.challenge.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.io.IOUtils;
-import org.quartz.*;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 
 import javax.persistence.Entity;
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
 
 @Entity
 public class ProjectGenerationTask extends Task {
@@ -15,6 +17,7 @@ public class ProjectGenerationTask extends Task {
 
     public ProjectGenerationTask() {
         setType("PROJECTGENERATION");
+        setHasConsumableResult(true);
     }
 
     public String getStorageLocation() {
@@ -25,48 +28,32 @@ public class ProjectGenerationTask extends Task {
         this.storageLocation = storageLocation;
     }
 
-    public void storeResult(URL url) throws IOException {
-        File outputFile = File.createTempFile(this.getId(), ".zip");
-
-        outputFile.deleteOnExit();
-        this.setStorageLocation(outputFile.getAbsolutePath());
-
-        try (InputStream is = url.openStream();
-             OutputStream os = new FileOutputStream(outputFile)) {
-            IOUtils.copy(is, os);
-        }
-    }
-
     @Override
     public JobDetail createTaskJobDetail() {
-        return null;
+        // create the file before the task starts
+        // this avoids creating a separate onJobFinish handler for now
+        File outputFile = null;
+        try {
+            outputFile = File.createTempFile(getId(), ".zip");
+            outputFile.deleteOnExit();
+            setStorageLocation(outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return JobBuilder.newJob(ProjectGenerationTaskJob.class)
+                .withIdentity(getId(), getJobGroup())
+                .usingJobData("progress", 0.0)
+                .usingJobData("fileLocation", getStorageLocation())
+                .storeDurably()
+                .build();
     }
 
     @Override
-    public ScheduleBuilder createTaskTrigger() {
-        return null;
-    }
-
-    private class ProjectGenerationTaskJob implements Job {
-        public ProjectGenerationTaskJob() {
-        }
-
-        @Override
-        public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-            /*URL url = Thread.currentThread().getContextClassLoader().getResource("file.zip");
-
-            if (url == null) {
-                throw new InternalException("Zip file not found");
-            }
-
-            try {
-                storeResult(url);
-            } catch (Exception e) {
-                throw new InternalException(e);
-            }
-
-            setProgress(100);
-            setHasConsumableResult(true);*/
-        }
+    public Trigger createTaskTrigger(JobDetail job) {
+        return TriggerBuilder.newTrigger()
+                .forJob(job)
+                .startNow()
+                .build();
     }
 }

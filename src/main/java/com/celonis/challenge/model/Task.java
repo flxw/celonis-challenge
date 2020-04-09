@@ -2,7 +2,7 @@ package com.celonis.challenge.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.quartz.JobDetail;
-import org.quartz.ScheduleBuilder;
+import org.quartz.Trigger;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -85,5 +85,5 @@ public abstract class Task {
 
     public abstract JobDetail createTaskJobDetail();
 
-    public abstract ScheduleBuilder createTaskTrigger();
+    public abstract Trigger createTaskTrigger(JobDetail job);
 }

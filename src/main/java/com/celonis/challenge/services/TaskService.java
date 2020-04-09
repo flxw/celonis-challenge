@@ -64,12 +64,7 @@ public class TaskService {
     public void executeTask(String taskId) {
         Task existing = getTask(taskId);
         JobDetail job = existing.createTaskJobDetail();
-        ScheduleBuilder ssb = existing.createTaskTrigger();
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .forJob(job)
-                .withIdentity("trigger", taskId)
-                .withSchedule(ssb)
-                .build();
+        Trigger trigger = existing.createTaskTrigger(job);
 
         try {
             schedulerFactory.getScheduler().scheduleJob(job, trigger);
