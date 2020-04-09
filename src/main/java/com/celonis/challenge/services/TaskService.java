@@ -67,6 +67,7 @@ public class TaskService {
 
         try {
             scheduler.getScheduler().scheduleJob(job, trigger);
+            taskRepository.setStateFor(Task.STATE.RUNNING, taskId);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
@@ -93,19 +94,14 @@ public class TaskService {
     }
 
     public void cancelTask(String taskId) {
-        Optional<Task> optionalTask = taskRepository.findById(taskId);
+        JobKey jobToBeDeleted = new JobKey(taskId);
+        try {
+            scheduler.getScheduler().deleteJob(jobToBeDeleted);
 
-        if (!optionalTask.isPresent()) {
-            return;
+            taskRepository.setStateFor(Task.STATE.READY, taskId);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
         }
-
-        Task t = optionalTask.get();
-
-        t.setState(Task.STATE.READY);
-        taskRepository.save(t);
-
-        // scheduler.deleteJob(jobName, jobGroup);
-        // TODO: when deleting, cancel first!
     }
 
     public void cleanUpJobs() {
