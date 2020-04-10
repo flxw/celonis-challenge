@@ -112,7 +112,7 @@ public class TaskService {
 
         Trigger janitorTrigger = TriggerBuilder.newTrigger()
                     .forJob(janitorDetail)
-                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 * * 0"))
+                    .withSchedule(CronScheduleBuilder.cronSchedule("0 0 12 ? * SUN *"))
                     .build();
 
         try {
