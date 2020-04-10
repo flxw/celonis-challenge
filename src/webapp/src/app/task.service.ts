@@ -13,8 +13,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class TaskService implements OnInit {
-  // TODO: port forward the service here
-  private SERVER_ADDRESS:string = "http://localhost:30163";
+  private SERVER_ADDRESS:string = "http://localhost:8080"; //"http://localhost:30163";
   private TASK_API:string ="/api/tasks/";
 
   constructor(private http: HttpClient) { }
