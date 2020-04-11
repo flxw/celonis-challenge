@@ -105,7 +105,7 @@ and his password is `password123`.
 > Adapt the project so that it produces a Docker image of the application.
 
 I created a Dockerfile. Simply run `docker build -t <IMAGE_TAG> .`  to produce a docker image for the application.
-By itself it won't run though, as it requires certain environment variables. 
+By itself it won't run though, as it requires certain environment variables. These are defined in the Kubernetes manifest
 
 #### Task 2: Write Kubernetes manifests
 > Prepare manifests to run the application on Kubernetes.
@@ -118,16 +118,15 @@ By itself it won't run though, as it requires certain environment variables.
 Do `kubectl apply -f kubernetes/deployment.yaml` to set up the whole deployment. It does the following:
 
 1. Create a deployment with 3 pods and a rolling release strategy, allowing zero-downtime deployments
-2. Access to the local DB is granted via a `postgres-db-svc` service
+2. Access to the local DB via a service `postgres-db-svc`
 3. Database credentials and the auth header are injected to the pods as environments from a Kubernetes secret
 4. The application processes data in a transactional fashion, after which the state is persisted, allowing for different parts of task execution to take place on different pods
 5. The whole deployment is exposed to `localhost:30163` via a service that routes traffic to one of the 3 pods
 
 #### Task 3: What's missing?
-I think some sort of user management is missing, or that there should be a limit to how many tasks a session
+I think some sort of user management is missing.
+Furthermore there should be a limit to how many tasks a session
 or IP is allowed to created and/or run at the same time.
-UI-wise I would replace the refresh button with a timed refresh,
-or even better get rid of requests for progress checking altogether and use websockets.
-Finally, I would serve the UI not from the pods where it is auth-header protected,
-but from an array of nginx pods.
+UI-wise I would replace the refresh button with a timed refresh, or even better get rid of requests for progress checking altogether and use websockets so that the UI can auto-update.
+Finally, I would serve the UI not from the pods, but from an array of nginx pods.
 This would achieve additionally a seperation of frontend and backend on the pod level.

@@ -27,8 +27,17 @@ public class TaskController {
     }
 
     @PostMapping("/")
-    public Task createTask(@RequestBody @Valid TaskCreationPayload taskCreationPayload) {
-        return taskService.createTask(taskCreationPayload);
+    public ResponseEntity createTask(@RequestBody @Valid TaskCreationPayload taskCreationPayload) {
+        ResponseEntity returnEntity;
+
+        if (taskCreationPayload.isValid()) {
+            Task t = taskService.createTask(taskCreationPayload);
+            returnEntity = ResponseEntity.status(HttpStatus.OK).body(t);
+        } else {
+            returnEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return returnEntity;
     }
 
     @GetMapping("/{taskId}")
@@ -37,9 +46,18 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}")
-    public Task updateTask(@PathVariable String taskId,
-                           @RequestBody @Valid TaskCreationPayload pl) {
-        return taskService.update(taskId, pl);
+    public ResponseEntity updateTask(@PathVariable String taskId,
+                           @RequestBody @Valid TaskCreationPayload payload) {
+        ResponseEntity returnEntity;
+
+        if (payload.isValid()) {
+            Task t = taskService.update(taskId, payload);
+            returnEntity = ResponseEntity.status(HttpStatus.OK).body(t);
+        } else {
+            returnEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return returnEntity;
     }
 
     @CrossOrigin(origins = "*")

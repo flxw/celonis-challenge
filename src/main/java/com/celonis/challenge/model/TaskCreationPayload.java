@@ -1,5 +1,6 @@
 package com.celonis.challenge.model;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 public class TaskCreationPayload {
@@ -8,8 +9,12 @@ public class TaskCreationPayload {
         PROJECTGENERATION
     };
 
+    @NotNull
     public String name;
+
+    @NotNull
     public TYPE type;
+
     public int x;
     public int y;
 
@@ -30,5 +35,20 @@ public class TaskCreationPayload {
         t.setName(name);
 
         return t;
+    }
+
+    public boolean isValid() {
+        boolean valid = true;
+
+        switch (this.type) {
+            case PROJECTGENERATION:
+                break;
+
+            case TIMER:
+                valid = valid && x < y;
+                break;
+        }
+
+        return valid;
     }
 }

@@ -1,183 +1,215 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
-  description: This is the api for the Celonis Programming Challenge
+  description: This is the API for the Celonis Programming Challenge
   version: 1.0.0
   title: Celonis Programming Challenge
-host: pure-plains-73336.herokuapp.com
-basePath: /api
-schemes:
-  - https
 paths:
   /tasks/:
     post:
       tags:
         - tasks
       summary: Create a new task
-      description: ''
+      description: Create a new task of a specific type via this general interface. State a valid task type and give the neccessary parameters. If the parameters are insufficient or invalid for the requested task, the answer code will show that.
       operationId: createTask
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          description: task to create
-          required: true
-          schema:
-            $ref: '#/definitions/ProjectGenerationTask'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCreationPayload"
+        description: task to create
+        required: true
       responses:
-        '200':
+        "200":
           description: successful operation
-          schema:
-            $ref: '#/definitions/ProjectGenerationTask'
-        '405':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "405":
           description: Invalid input
     get:
       tags:
         - tasks
       summary: list all tasks
-      description: ''
+      description: ""
       operationId: listTasks
-      produces:
-        - application/json
       responses:
-        '200':
+        "200":
           description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ProjectGenerationTask'
-  '/tasks/{id}':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectGenerationTask"
+  "/tasks/{id}":
     get:
       tags:
         - tasks
       summary: get a tasks by id
-      description: ''
+      description: ""
       operationId: getTask
       parameters:
         - name: id
           in: path
           description: id of task to return
           required: true
-          type: string
-          format: uuid
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: successful operation
           schema:
-            $ref: '#/definitions/ProjectGenerationTask'
-        '404':
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectGenerationTask"
+        "404":
           description: not found
     put:
       tags:
         - tasks
       summary: update a tasks by id
-      description: ''
+      description: ""
       operationId: updateTask
       parameters:
         - name: id
           in: path
           description: id of task to update
           required: true
-          type: string
-          format: uuid
-        - in: body
-          name: body
-          description: updated task
-          required: true
           schema:
-            $ref: '#/definitions/ProjectGenerationTask'
-      consumes:
-        - application/json
-      produces:
-        - application/json
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectGenerationTask"
+        description: updated task
+        required: true
       responses:
-        '200':
+        "200":
           description: successful operation
-          schema:
-            $ref: '#/definitions/ProjectGenerationTask'
-        '404':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectGenerationTask"
+        "404":
           description: not found
     delete:
       tags:
         - tasks
       summary: delete a tasks by id
-      description: ''
+      description: ""
       operationId: deleteTask
       parameters:
         - name: id
           in: path
           description: id of task to delete
           required: true
-          type: string
-          format: uuid
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: successful operation
-        '404':
+        "404":
           description: not found
-  '/tasks/{id}/execute':
+  "/tasks/{id}/execute":
     post:
       tags:
         - tasks
       summary: execute a tasks by id
-      description: ''
+      description: ""
       operationId: executeTask
       parameters:
         - name: id
           in: path
           description: id of task to execute
           required: true
-          type: string
-          format: uuid
+          schema:
+            type: string
+            format: uuid
       responses:
-        '204':
+        "204":
           description: successful operation
-        '404':
+        "404":
           description: not found
-  '/tasks/{id}/result':
+  "/tasks/{id}/result":
     get:
       tags:
         - tasks
       summary: downloads the task result
-      description: ''
+      description: Returns the result of the task execution, depending on the type of the task. Some types of tasks do not produce a result that can be downloaded.
       operationId: downloadTaskResult
       parameters:
         - name: id
           in: path
           description: id of task to get result
           required: true
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: successfull operation
           schema:
-            type: file
-        '404':
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successfull operation
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
           description: not found
-securityDefinitions:
-  api_key:
-    type: apiKey
-    name: Celonis-Auth
-    in: header
 security:
   - api_key: []
-definitions:
-  ProjectGenerationTask:
-    type: object
-    properties:
-      id:
-        type: string
-        format: uuid
-      name:
-        type: string
-      creationDate:
-        type: string
-        format: date-time
-      tasktype:
-        type: string
-        format: string
+servers:
+  - url: http://localhost:30163/api
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Celonis-Auth
+      in: header
+  schemas:
+    TaskCreationPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        x:
+          type: number
+        y:
+          type: integer
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+        hasConsumableResult:
+          type: boolean
+        progress:
+          type: number
+          format: double
+    ProjectGenerationTask:
+      description: Sets type to PROJECTGENERATION
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          properties:
+            rootCause:
+              type: string
+    TimerTask:
+      description: Sets type to TIMER
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
