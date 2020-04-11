@@ -25,7 +25,7 @@ public class SimpleHeaderFilter extends OncePerRequestFilter {
         }
 
         String val = request.getHeader(HEADER_NAME);
-        if (val == null || !val.equals(HEADER_VALUE)) {
+        if ((val == null || !val.equals(HEADER_VALUE)) && request.getRequestURI().startsWith("/api")) {
             response.setStatus(401);
             response.getWriter().append("Not authorized");
             return;
