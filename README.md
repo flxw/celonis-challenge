@@ -52,10 +52,9 @@ Done
 This task led me to do several things:
 1. Create an abstract base class _Task_, and derive a task to generate projects and a timer task from it
 2. The parent class Task provides the attributes that both tasks share
-3. With the given superclass Task, it was easy to leverage polymorphism to execute a task irrespective of its type
 4. The JpaRepository was also adapted to use the superclass
 4. Add a state field, to track different task states such as ready, in execution, and done
-4. Generalize task execution to have a single interface for executing both kinds of tasks in a clustered environment
+4. Generalize task execution through polymorphism to have a single interface for executing both kinds of tasks in a clustered environment
 4. Task progress is persisted via a listener on scheduler job executions
 
 #### Task 5: Periodically cleaning up the tasks
