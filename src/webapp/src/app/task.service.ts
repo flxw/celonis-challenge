@@ -15,10 +15,25 @@ const httpOptions = {
 export class TaskService implements OnInit {
   private SERVER_ADDRESS:string = "http://localhost:8080"; //"http://localhost:30163";
   private TASK_API:string ="/api/tasks/";
+  private taskCache:any = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   ngOnInit() {
+    this.refreshTasks();
+  }
+
+  getTaskCache() {
+    return this.taskCache;
+  }
+
+  getTasksByType(type:string) {
+    return this.taskCache.filter(task => task.type == type);
+  }
+
+  refreshTasks() {
+    this.getTasks().subscribe(r => this.taskCache = r);
   }
 
   getTasks() {

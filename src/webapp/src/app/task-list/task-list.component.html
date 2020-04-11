@@ -1,30 +1,15 @@
 <mat-list>
     <div mat-subheader>
         Generation tasks
-        <span class="spacer"></span>
-
-        <button mat-button [matMenuTriggerFor]="menu">
-          Add task...
-          <mat-icon>add</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openProjectgenerationTaskCreationDialog()">Generate a project</button>
-          <button mat-menu-item (click)="openTimerTaskCreationDialog()">Schedule a timer</button>
-        </mat-menu>
-
-        <button mat-button (click)="updateTaskList()">
-            Refresh all
-            <mat-icon class="example-icon">refresh</mat-icon>
-        </button>
     </div>
-    <ng-container *ngFor="let t of filterOnTaskType('PROJECTGENERATION')">
+    <ng-container *ngFor="let t of taskService.getTasksByType('PROJECTGENERATION')">
         <ng-container *ngTemplateOutlet="task; context:{task: t}"></ng-container>
     </ng-container>
 
     <mat-divider></mat-divider>
 
     <div mat-subheader>Timer tasks</div>
-    <ng-container *ngFor="let t of filterOnTaskType('TIMER')">
+    <ng-container *ngFor="let t of taskService.getTasksByType('TIMER')">
         <ng-container *ngTemplateOutlet="task; context:{task: t}"></ng-container>
     </ng-container>
 </mat-list>
