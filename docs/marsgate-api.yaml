@@ -18,6 +18,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Application'
+        401:
+          description: Unauthorized
       produces:
         - application/json
   /application:
@@ -30,6 +32,8 @@ paths:
           schema:
             type: string
             format: uuid
+        401:
+          description: Unauthorized - accessing without cookie
       produces:
         - application/json
   /application/{id}:
@@ -42,7 +46,7 @@ paths:
         required: true
     get:
       summary: Get an application
-      description: Gets specified application, if it belongs to the current user
+      description: Gets the specified application, if it belongs to the current user. Parts of the application can be empty, since this is the current state of it.
       responses:
         200:
           description: OK
@@ -50,6 +54,8 @@ paths:
             $ref: '#/definitions/Application'
         404:
           description: Application not present or access forbidden (to prevent snooping)
+        401:
+          description: Unauthorized - accessing without cookie
     delete:
       summary: Cancel and delete an application
       description: Cancels and deletes an application, if it belongs to the current user
@@ -58,6 +64,8 @@ paths:
           description: OK
         404:
           description: Application not present or access forbidden (to prevent snooping)
+        401:
+          description: Unauthorized - accessing without cookie
     
   /application/{id}/cv:
     parameters:
@@ -80,6 +88,8 @@ paths:
           description: OK
         404:
           description: Application not present or access forbidden (to prevent snooping)
+        401:
+          description: Unauthorized - accessing without cookie
   /application/{id}/details:
     parameters:
       - name: id
@@ -101,6 +111,8 @@ paths:
           description: OK
         404:
           description: Application not present or access forbidden (to prevent snooping)
+        401:
+          description: Unauthorized - accessing without cookie
   /application/{id}/essay:
     parameters:
       - name: id
@@ -122,6 +134,8 @@ paths:
           description: OK
         404:
           description: Application not present or access forbidden (to prevent snooping)
+        401:
+          description: Unauthorized - accessing without cookie
   /application/{id}/submit:
     parameters:
       - name: id
@@ -140,6 +154,8 @@ paths:
           description: The application is incomplete and can not be submitted
         404:
           description: Application not present or access forbidden (to prevent snooping)
+        401:
+          description: Unauthorized - accessing without cookie
 
 securityDefinitions:
    'User Authentication Cookie':
