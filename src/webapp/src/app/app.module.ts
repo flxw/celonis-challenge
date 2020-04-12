@@ -12,11 +12,11 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatStepperModule} from '@angular/material/stepper';
 import {MatRadioModule} from '@angular/material/radio';
 import {FormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { TimerTaskCreationDialogComponent } from './timer-task-creation-dialog/timer-task-creation-dialog.component';
 import { ProjectgenerationTaskCreationDialogComponent } from './projectgeneration-task-creation-dialog/projectgeneration-task-creation-dialog.component';
 
@@ -38,7 +38,7 @@ import { ProjectgenerationTaskCreationDialogComponent } from './projectgeneratio
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
-    MatStepperModule,
+    MatSlideToggleModule,
     MatRadioModule,
     FormsModule,
     MatInputModule,

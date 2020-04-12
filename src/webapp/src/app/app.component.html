@@ -3,17 +3,22 @@
   <span class="spacer"></span>
 
   <button mat-button [matMenuTriggerFor]="menu">
-    Add task...
     <mat-icon>add</mat-icon>
+    Add task...
   </button>
   <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="openProjectgenerationTaskCreationDialog()">Generate a project</button>
     <button mat-menu-item (click)="openTimerTaskCreationDialog()">Schedule a timer</button>
   </mat-menu>
 
-  <button mat-button (click)="updateTaskList()">
+  <mat-slide-toggle (change)="onSlideToggleChange($event)">
+    Auto-refresh
+  </mat-slide-toggle>
+  <button mat-button (click)="updateTaskList()" [disabled]="autorefreshEnabled">
+    <mat-icon class="example-icon">
+      refresh
+    </mat-icon>
     Refresh all
-    <mat-icon class="example-icon">refresh</mat-icon>
   </button>
 </mat-toolbar>
 <app-task-list></app-task-list>

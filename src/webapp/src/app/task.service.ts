@@ -14,7 +14,7 @@ const httpOptions = {
 })
 export class TaskService implements OnInit {
   private SERVER_ADDRESS:string = "http://localhost:8080"; //"http://localhost:30163";
-  private TASK_API:string ="/api/tasks/";
+  private TASK_API:string = "/api/tasks/";
   private taskCache:any = [];
 
   constructor(private http: HttpClient) {
