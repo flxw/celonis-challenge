@@ -16,6 +16,7 @@
 > - Cancel/delete an application
 > 
 > The user will be able to start multiple applications at the same time and is not required to finish the whole application at once. So, he can start by filling a few steps and come back later to complete and submit the application, or cancel/delete it. In the list of applications that he/she created, the user will see the progress of each application.
+The OpenAPI 2.0 specification for the MarsGate API proposal can be found in the the `docs/marsgate-api.yaml`file.
 
 ### Challenge 2: Completing and extending the java application
 
@@ -56,6 +57,7 @@ This task led me to do several things:
 4. Add a state field, to track different task states such as ready, in execution, and done
 4. Generalize task execution through polymorphism to have a single interface for executing both kinds of tasks in a clustered environment
 4. Task progress is persisted via a listener on scheduler job executions
+5. Update the documentation inside `docs/task-api.yaml`
 
 #### Task 5: Periodically cleaning up the tasks
 > The API can be used to create tasks but the user is not required to execute those tasks. The tasks that are not executed after an extended period of time (e.g. a week) should be periodically cleaned up (deleted).
@@ -128,5 +130,5 @@ I think some sort of user management is missing.
 Furthermore there should be a limit to how many tasks a session
 or IP is allowed to created and/or run at the same time.
 UI-wise I would replace the refresh button with a timed refresh, or even better get rid of requests for progress checking altogether and use websockets so that the UI can auto-update.
-Finally, I would serve the UI not from the pods, but from an array of nginx pods.
-This would achieve additionally a seperation of frontend and backend on the pod level.
+Finally, I would serve the UI not from the pods, but from a separate array of nginx pods.
+I believe that this would achieve better performance and additionally a seperation of frontend and backend on the pod level.
