@@ -9,7 +9,12 @@
   <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="openProjectgenerationTaskCreationDialog()">Generate a project</button>
     <button mat-menu-item (click)="openTimerTaskCreationDialog()">Schedule a timer</button>
-  </mat-menu>
+    <button mat-menu-item
+            (click)="resumeTaskCreationDialog()"
+            [disabled]="!canResumeTaskCreation">
+      Resume task creation
+    </button>
+    </mat-menu>
 
   <mat-slide-toggle (change)="onSlideToggleChange($event)">
     Auto-refresh

@@ -19,6 +19,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { TimerTaskCreationDialogComponent } from './timer-task-creation-dialog/timer-task-creation-dialog.component';
 import { ProjectgenerationTaskCreationDialogComponent } from './projectgeneration-task-creation-dialog/projectgeneration-task-creation-dialog.component';
+import {NgxWebstorageModule} from 'ngx-webstorage';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { ProjectgenerationTaskCreationDialogComponent } from './projectgeneratio
     MatRadioModule,
     FormsModule,
     MatInputModule,
-    MatMenuModule
+    MatMenuModule,
+    NgxWebstorageModule.forRoot()
   ],
   entryComponents: [TimerTaskCreationDialogComponent, ProjectgenerationTaskCreationDialogComponent],
   providers: [],
