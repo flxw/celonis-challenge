@@ -13,7 +13,8 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class TaskService implements OnInit {
-  private SERVER_ADDRESS:string = "http://localhost:8080"; //"http://localhost:30163";
+  //private SERVER_ADDRESS:string = "http://localhost:8080";
+  private SERVER_ADDRESS:string = "http://localhost:30163"
   private TASK_API:string = "/api/tasks/";
   private taskCache:any = [];
 

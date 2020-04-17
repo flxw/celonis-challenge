@@ -10,7 +10,7 @@ paths:
   /applications:
     get:
       summary: Get all applications for the current user
-      description: This endpoint returns all applications, irrespective of their state for the current user. Empty if there aren't any.
+      description: This endpoint returns all applications, irrespective of their state for the current user. The returned list is empty if there aren't any. Parts of an application can be null, since these have not been submitted yet
       responses:
         200:
           description: OK
@@ -46,7 +46,7 @@ paths:
         required: true
     get:
       summary: Get an application
-      description: Gets the specified application, if it belongs to the current user. Parts of the application can be empty, since this is the current state of it.
+      description: Gets the specified application, if it belongs to the current user. Parts of the application can be null, since these have not been submitted yet
       responses:
         200:
           description: OK
@@ -224,6 +224,8 @@ definitions:
         type: string
       address:
         $ref: '#/definitions/Address'
+      status:
+        type: string
   Address:
     type: object
     properties:
