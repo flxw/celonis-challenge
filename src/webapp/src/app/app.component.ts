@@ -81,7 +81,6 @@ export class AppComponent {
   handleDialogCompletion(payload:TaskCreationPayload, that:any) {
     if (payload == undefined) return;
 
-    console.log(payload)
     this.sessionStorage.clear(this.sessionTaskStorageKey);
     that.taskService.createTask(payload).subscribe(r => this.updateTaskList());
   }
