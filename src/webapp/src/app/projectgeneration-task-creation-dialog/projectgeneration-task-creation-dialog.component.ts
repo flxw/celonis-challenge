@@ -21,7 +21,7 @@ export class ProjectgenerationTaskCreationDialogComponent {
     }
 
     dialogRef.keydownEvents().subscribe(e => this.triggerStateSave());
-    dialogRef.backdropClick().subscribe(e => this.onNoClick());
+    dialogRef.afterClosed().subscribe(e => this.onNoClick());
   }
 
   onNoClick(): void {
