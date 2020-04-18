@@ -69,7 +69,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
+                    <artifactId>junit-vintage</artifactId>
                 </exclusion>
             </exclusions>
 
