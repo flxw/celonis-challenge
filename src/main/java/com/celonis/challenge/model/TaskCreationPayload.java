@@ -10,7 +10,7 @@ public class TaskCreationPayload {
     };
 
     @NotNull
-    public String name;
+    public String name = "";
 
     @NotNull
     public TYPE type;
@@ -38,7 +38,7 @@ public class TaskCreationPayload {
     }
 
     public boolean isValid() {
-        boolean valid = true;
+        boolean valid = !name.isEmpty();
 
         switch (this.type) {
             case PROJECTGENERATION:

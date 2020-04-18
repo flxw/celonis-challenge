@@ -17,6 +17,7 @@ export class AppComponent {
   public autorefreshEnabled:boolean = false;
   public canResumeTaskCreation:boolean = false;
   private intervalId:any;
+  private sessionTaskStorageKey = 'resumetask';
 
   constructor(private sessionStorage: SessionStorageService,
               private taskService:TaskService,
@@ -46,7 +47,7 @@ export class AppComponent {
   }
 
   openTimerTaskCreationDialog(): void {
-    let resumeData = this.sessionStorage.retrieve('resumetask');
+    let resumeData = this.sessionStorage.retrieve(this.sessionTaskStorageKey);
     const dialogRef = this.dialog.open(TimerTaskCreationDialogComponent, {
       width: '600px',
       data: resumeData
@@ -57,7 +58,7 @@ export class AppComponent {
   }
 
   openProjectgenerationTaskCreationDialog(): void {
-    let resumeData = this.sessionStorage.retrieve('resumetask');
+    let resumeData = this.sessionStorage.retrieve(this.sessionTaskStorageKey);
     const dialogRef = this.dialog.open(ProjectgenerationTaskCreationDialogComponent, {
       width: '600px',
       data: resumeData
@@ -80,6 +81,8 @@ export class AppComponent {
   handleDialogCompletion(payload:TaskCreationPayload, that:any) {
     if (payload == undefined) return;
 
+    console.log(payload)
+    this.sessionStorage.clear(this.sessionTaskStorageKey);
     that.taskService.createTask(payload).subscribe(r => this.updateTaskList());
   }
 }
