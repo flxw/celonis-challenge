@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: challenge
-          image: challenge-13
+          image: challenge-14
           resources: {}
           imagePullPolicy: IfNotPresent
           ports:
