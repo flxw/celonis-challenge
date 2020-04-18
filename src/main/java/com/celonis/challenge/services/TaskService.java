@@ -95,7 +95,7 @@ public class TaskService {
     }
 
     public void cancelTask(String taskId) {
-        JobKey jobToBeDeleted = new JobKey(taskId);
+        JobKey jobToBeDeleted = new JobKey(taskId, Task.getJobGroup());
         try {
             schedulerFactory.getScheduler().deleteJob(jobToBeDeleted);
             taskRepository.setStateFor(Task.STATE.READY, taskId);
