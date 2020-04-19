@@ -24,7 +24,7 @@ The OpenAPI 2.0 specification for the MarsGate API proposal can be found in the 
 > We provided the API documentation as a swagger yaml specification that you can open in https://editor.swagger.io/. The application that implements this documentation is currently running on heroku at https://pure-plains-73336.herokuapp.com/. You should use the app (e.g. via swagger editor) to create a task, execute it and get the result. The result is a zip file that contains the base project for the upcoming tasks. The header authentication secret (named Celonis-Auth) is "totally_secret".
 
 Used the Swagger documentation to create a new task, trigger it and download its result.
-While using it I realized that it could be optimized, since it does not make sense to provide an ID or creation date and get another one as return.
+While using it I thought that it could be optimized, since it does not make sense to me to provide an ID or creation date and get another one as return. I did that when implementing the tasks below.
 
 #### Task 2: Dependency injection
 > The project that you downloaded in Task 1 fails to start correctly due to a problem in the dependency injection.
@@ -38,7 +38,7 @@ I refactored both classes together since I felt they were revolving around the s
 > would be a standalone runnable jar containing every dependency (runnable via java -jar challenge.jar).
 > Your frontend application should also be packed into the jar.
 
-Done
+Done.
 
 #### Task 4: Extending the application
 > The task in this challenge is to extend the current functionality of the backend by
@@ -51,18 +51,18 @@ Done
 > The progress of the task should be exposed via the API so that the web client can monitor it. Canceling a task that is being executed should be possible, in which case the execution should stop.
 
 This task led me to do several things:
-1. Create an abstract base class _Task_, and derive a task to generate projects and a timer task from it
-2. The parent class Task provides the attributes that both tasks share
-4. The JpaRepository was also adapted to use the superclass
-4. Add a state field, to track different task states such as ready, in execution, and done
-4. Generalize task execution through polymorphism to have a single interface for executing both kinds of tasks in a clustered environment
+1. Create an abstract base class _Task_, and derive a class to generate projects and a class for timer tasks from it
+2. The parent class Task provides the attributes that both tasks share and abstract methods, e.g. for scheduling. This allows for task execution via a common interface for both kinds of tasks
+4. Adapt the JpaRepository to handle the bean hierarchy, as well as configure Spring to put the beans into a single table
+4. Add a state field to the base class to track different task states such as ready, in execution, and done
 4. Task progress is persisted via a listener on scheduler job executions
+4. Add a class that carries task creation data, since one endpoint should be used to both kinds of tasks, and it should not be necessary to pass IDs for task creation
 5. Update the documentation inside `docs/task-api.yaml`
 
 #### Task 5: Periodically cleaning up the tasks
 > The API can be used to create tasks but the user is not required to execute those tasks. The tasks that are not executed after an extended period of time (e.g. a week) should be periodically cleaned up (deleted).
 
-Via a scheduled job, all tasks older than 7 days are deleted.
+Via a scheduled job, triggered every 7 days, all tasks older than 7 days are deleted.
 This task is also scheduled by the TaskService.
 
 ## Frontend module
@@ -94,7 +94,11 @@ This task is also scheduled by the TaskService.
 In the application, tasks are separated by type and can be executed, canceled or deleted.
 Results can also be downloaded, if applicable.
 The UI does not match the proposed one by far, but I believe that it delivers on the requirements.
-I took the liberty to reduce the task creation process to the bare minimum to make it faster and easier for the user. In the specification, it was 5 clicks. In my proposal, there are no IDs anymore, just name, relevant extra data and the task is created in 3 clicks.
+I took the liberty to reduce the task creation process to the bare minimum to make it faster and easier for the user.
+In the specification, it was 5 clicks.
+In my proposal, there are no IDs anymore, just name, task-specific extra data and the task is created in 3 clicks.
+There is a progress bar on the UI that shows how far a task is, and it can be cancelled or deleted, too.
+To save the user from having to press "refresh" all the time, I added an auto-update button.
 
 ## Cloud Native Module
 ### Challenge 1: Running on Kubernetes
@@ -120,15 +124,23 @@ By itself it won't run though, as it requires certain environment variables. The
 Do `kubectl apply -f kubernetes/deployment.yaml` to set up the whole deployment. It does the following:
 
 1. Create a deployment with 3 pods and a rolling release strategy, allowing zero-downtime deployments
-2. Access to the local DB via a service `postgres-db-svc`
-3. Database credentials and the auth header are injected to the pods as environments from a Kubernetes secret
-4. The application processes data in a transactional fashion, after which the state is persisted, allowing for different parts of task execution to take place on different pods
+2. Access to the local PostgreSQL DB via the service `postgres-db-svc`
+3. Database credentials and the auth header are injected to the pods as environment variables from a Kubernetes secret
 5. The whole deployment is exposed to `localhost:30163` via a service that routes traffic to one of the 3 pods
+
+This task also transformed the way I though about applications like therse.
+Due to the fact that it runs in ephemeral pods, it helps a little to think like a DBMS in ACID terms.
+The application needs to process data in a transactional fashion, and only persist valid states.
+This allows for different pods to take over if the other pod fails - without leaving the user's data in an undefined state.
+Initially I used shedlock to prevent schedules from executing at the same time, but this requirement had me switch to Quartz.
 
 #### Task 3: What's missing?
 I think some sort of user management is missing.
-Furthermore there should be a limit to how many tasks a session
-or IP is allowed to created and/or run at the same time.
-UI-wise I would replace the refresh button with a timed refresh, or even better get rid of requests for progress checking altogether and use websockets so that the UI can auto-update.
-Finally, I would serve the UI not from the pods, but from a separate array of nginx pods.
+Furthermore there should be a limit to how many tasks a session or IP is allowed to created and/or run at the same time.
+I have not worked a lot with scheduling before so I am not sure how much load one trigger and job per executing task causes, and if it would not be better to bundle it (like in my first implementation with Shedlock).
+
+UI-wise I would would like to get rid of requests for progress checking altogether and use websockets so that the UI can auto-update.
+Also, I would like to add a download button to download that task data from the UI.
+
+On the deployment, I would prefer to serve the UI not from the pods, but from a separate array of nginx pods.
 I believe that this would achieve better performance and additionally a seperation of frontend and backend on the pod level.
